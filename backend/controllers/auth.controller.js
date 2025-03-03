@@ -1,4 +1,5 @@
 import twilio from "twilio";
+import jwt from "jsonwebtoken";
 import { User } from "../models/User.model.js";
 import dotenv from "dotenv";
 
@@ -7,6 +8,10 @@ dotenv.config();
 const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 const generateOtp = () => {
   return Math.floor(10000 + Math.random() * 90000);
+};
+
+const generateToken = (user) => {
+  return jwt.sign({ id: user._id, mobileno: user.mobileno }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 };
 
 const handleOtp = async (req, res) => {
@@ -19,12 +24,12 @@ const handleOtp = async (req, res) => {
   try {
     if (action === "send") {
       const newotp = generateOtp(); 
-      let user = await User.findOne({ mobileno });
+      let user = await User.findOne({ mobileno: String(mobileno) });
 
       if (!user) {
-        user = new User({ mobileno, otp: newotp });
+        user = new User({ mobileno: String(mobileno), otp: String(newotp) });
       } else {
-        user.otp = newotp;
+        user.otp = String(newotp);
       }
 
       await user.save();
@@ -38,15 +43,15 @@ const handleOtp = async (req, res) => {
       return res.status(200).json({ message: "OTP sent successfully" });
     }
     if (action === "verify") {
-      const user = await User.findOne({ mobileno });
+      const user = await User.findOne({ mobileno: String(mobileno) });
 
-      if (user && user.otp === otp) {
+      if (user && user.otp === String(otp)) {
         user.isVerified = true;
         user.otp = undefined;
         await user.save();
 
-        console.log(user)
-        return res.status(400).json({ message: "OTP verified successfully" });
+        const token = generateToken(user);
+        return res.status(200).json({ message: "OTP verified successfully", token });
       } else {
         return res.status(400).json({ message: "Invalid OTP" });
       }

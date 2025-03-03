@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   otp: {
-    type: Number,
+    type: String,
   }, 
   isVerified: { type: Boolean, default: false },
 });

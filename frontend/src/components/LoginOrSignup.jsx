@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function LoginOrSignup() {
+  const navigate = useNavigate();
   const [mobileno, setMobileno] = useState("");
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,10 +22,13 @@ function LoginOrSignup() {
     try {
       const response = await axios.post("http://localhost:5000/api/otp", {
         mobileno,
-        otp: Number(otp),
+        otp: String(otp),
         action: "verify",
       });
-      alert(response.data.message);
+      console.log(response.data);
+      localStorage.setItem("token", response.data.token);
+      setIsOtpSent(false);
+      navigate("/");
     } catch (error) {
       console.log(error);
       alert("error while verifying otp", error);
