@@ -31,7 +31,7 @@ function LoginOrSignup() {
       navigate("/");
     } catch (error) {
       console.log(error);
-      alert("error while verifying otp", error);
+      alert("Error while verifying OTP", error);
     }
   };
 
@@ -46,29 +46,43 @@ function LoginOrSignup() {
       alert(response.data.message);
     } catch (error) {
       console.log(error);
-      alert("error while sending otp", error);
+      alert("Error while sending OTP", error);
     }
   };
 
   return (
-    <div>
-      <a href="/">home</a>
-      <h1>Login</h1>
-      <form onSubmit={handleLogin} method="post">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+      <a href="/" className="text-blue-500 underline mb-4">Home</a>
+      <h1 className="text-3xl font-bold mb-6">Login</h1>
+      <form onSubmit={handleLogin} className="bg-white p-8 rounded-lg shadow-lg w-80">
         <input
           type="tel"
           placeholder="Mobile No"
           value={mobileno}
           onChange={(e) => setMobileno(e.target.value)}
           required
+          className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
         <input
           type="number"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
+          placeholder="OTP"
+          className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
-        <button onClick={sendotp}>{sendotp ? "send otp" : "resendotp"}</button>
-        <button type="submit">login</button>
+        <button
+          onClick={sendotp}
+          type="button"
+          className="w-full bg-blue-500 text-white py-2 rounded-lg mb-4 hover:bg-blue-600 transition"
+        >
+          {isOtpSent ? "Resend OTP" : "Send OTP"}
+        </button>
+        <button
+          type="submit"
+          className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
+        >
+          Login
+        </button>
       </form>
     </div>
   );

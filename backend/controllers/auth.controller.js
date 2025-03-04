@@ -11,7 +11,11 @@ const generateOtp = () => {
 };
 
 const generateToken = (user) => {
-  return jwt.sign({ id: user._id, mobileno: user.mobileno }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+  return jwt.sign(
+    { id: user._id, mobileno: user.mobileno },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRE }
+  );
 };
 
 const handleOtp = async (req, res) => {
@@ -23,7 +27,7 @@ const handleOtp = async (req, res) => {
 
   try {
     if (action === "send") {
-      const newotp = generateOtp(); 
+      const newotp = generateOtp();
       let user = await User.findOne({ mobileno: String(mobileno) });
 
       if (!user) {
@@ -36,7 +40,7 @@ const handleOtp = async (req, res) => {
 
       await client.messages.create({
         body: `Your OTP for login chatapp is ${newotp}`,
-        from: process.env.TWILIO_PHONE_NUMBER, 
+        from: process.env.TWILIO_PHONE_NUMBER,
         to: mobileno,
       });
 
@@ -51,7 +55,9 @@ const handleOtp = async (req, res) => {
         await user.save();
 
         const token = generateToken(user);
-        return res.status(200).json({ message: "OTP verified successfully", token });
+        return res
+          .status(200)
+          .json({ message: "OTP verified successfully", token });
       } else {
         return res.status(400).json({ message: "Invalid OTP" });
       }
@@ -63,4 +69,20 @@ const handleOtp = async (req, res) => {
   }
 };
 
-export { handleOtp };
+const userLogout = async (req, res) => {
+  const { mobileno } = req.body;
+
+  try {
+    const user = await User.findOne({ mobileno: String(mobileno) });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    user.isVerified = false;
+    await user.save();
+    return res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+export { handleOtp, userLogout };
