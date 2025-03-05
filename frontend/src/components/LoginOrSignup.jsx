@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function LoginOrSignup() {
+function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();
   const [mobileno, setMobileno] = useState("");
   const [otp, setOtp] = useState("");
@@ -51,24 +51,23 @@ function LoginOrSignup() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <a href="/" className="text-blue-500 underline mb-4">Home</a>
+    <div className={`min-h-screen flex flex-col items-center justify-center ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
       <h1 className="text-3xl font-bold mb-6">Login</h1>
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded-lg shadow-lg w-80">
+      <form onSubmit={handleLogin} className={`${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-black'} p-8 rounded-lg shadow-lg w-80`}>
         <input
           type="tel"
           placeholder="Mobile No"
           value={mobileno}
           onChange={(e) => setMobileno(e.target.value)}
           required
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className={`w-full p-2 mb-4 border ${darkMode ? 'border-gray-500 bg-gray-600 text-white' : 'border-gray-300 bg-white text-black'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
         />
         <input
           type="number"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
           placeholder="OTP"
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className={`w-full p-2 mb-4 border ${darkMode ? 'border-gray-500 bg-gray-600 text-white' : 'border-gray-300 bg-white text-black'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
         />
         <button
           onClick={sendotp}
