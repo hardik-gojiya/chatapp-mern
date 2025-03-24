@@ -8,14 +8,16 @@ const messageSchema = new mongoose.Schema(
       ref: User,
       required: true,
     },
-    reciver: {
+    recipient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: User,
       required: true,
     },
     message: {
       type: String,
-      required: true,
+    },
+    image: {
+      type: String,
     },
   },
   { timestamps: true }

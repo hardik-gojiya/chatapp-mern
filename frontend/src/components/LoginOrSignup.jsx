@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+axios.defaults.withCredentials = true;
 import { useNavigate } from "react-router-dom";
 
 function LoginOrSignup({ darkMode, toggleDarkMode }) {
@@ -8,9 +9,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-  }, []);
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,14 +19,14 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/otp", {
+      const response = await axios.post("http://localhost:5000/api/users/otp", {
         mobileno,
         otp: String(otp),
         action: "verify",
       });
       console.log(response.data);
-      localStorage.setItem("token", response.data.token);
       setIsOtpSent(false);
+      alert("login successful");
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -38,7 +37,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const sendotp = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/otp", {
+      const response = await axios.post("http://localhost:5000/api/users/otp", {
         mobileno,
         action: "send",
       });
@@ -51,23 +50,40 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
+    <div
+      className={`min-h-screen flex flex-col items-center justify-center ${
+        darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"
+      }`}
+    >
       <h1 className="text-3xl font-bold mb-6">Login</h1>
-      <form onSubmit={handleLogin} className={`${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-black'} p-8 rounded-lg shadow-lg w-80`}>
+      <form
+        onSubmit={handleLogin}
+        className={`${
+          darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
+        } p-8 rounded-lg shadow-lg w-80`}
+      >
         <input
           type="tel"
           placeholder="Mobile No"
           value={mobileno}
           onChange={(e) => setMobileno(e.target.value)}
           required
-          className={`w-full p-2 mb-4 border ${darkMode ? 'border-gray-500 bg-gray-600 text-white' : 'border-gray-300 bg-white text-black'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
+          className={`w-full p-2 mb-4 border ${
+            darkMode
+              ? "border-gray-500 bg-gray-600 text-white"
+              : "border-gray-300 bg-white text-black"
+          } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
         />
         <input
           type="number"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
           placeholder="OTP"
-          className={`w-full p-2 mb-4 border ${darkMode ? 'border-gray-500 bg-gray-600 text-white' : 'border-gray-300 bg-white text-black'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
+          className={`w-full p-2 mb-4 border ${
+            darkMode
+              ? "border-gray-500 bg-gray-600 text-white"
+              : "border-gray-300 bg-white text-black"
+          } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
         />
         <button
           onClick={sendotp}

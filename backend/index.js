@@ -2,14 +2,21 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
 
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -17,6 +24,8 @@ mongoose
   .catch((err) => console.log(err));
 
 import userroutes from "./routes/user.routes.js";
-app.use("/api", userroutes); 
+import messageRoute from "./routes/message.routes.js";
+app.use("/api/users", userroutes);
+app.use("/api/message", messageRoute);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 

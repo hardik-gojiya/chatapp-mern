@@ -41,7 +41,7 @@ const handleOtp = async (req, res) => {
       await client.messages.create({
         body: `Your OTP for login chatapp is ${newotp}`,
         from: process.env.TWILIO_PHONE_NUMBER,
-        to: mobileno,
+        to: `+91${mobileno}`,
       });
 
       return res.status(200).json({ message: "OTP sent successfully" });
@@ -55,9 +55,14 @@ const handleOtp = async (req, res) => {
         await user.save();
 
         const token = generateToken(user);
-        return res
-          .status(200)
-          .json({ message: "OTP verified successfully", token });
+
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+        });
+
+        return res.status(200).json({ message: "OTP verified successfully" });
       } else {
         return res.status(400).json({ message: "Invalid OTP" });
       }
@@ -79,6 +84,11 @@ const userLogout = async (req, res) => {
     }
     user.isVerified = false;
     await user.save();
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
     return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     return res.status(500).json({ message: "An error occurred" });

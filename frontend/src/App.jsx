@@ -53,7 +53,7 @@ function App() {
 
   return (
     <div className={`flex ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
-      <Sidebar toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+      <Sidebar toggleDarkMode={toggleDarkMode} darkMode={darkMode} islogedin={islogedin} handleLogout={handleLogout} />
       <Router>
         <div className="min-h-screen w-full flex flex-col items-center justify-center">
           <Routes>
@@ -61,7 +61,7 @@ function App() {
               path="/"
               element={
                 <div className="text-center">
-                  <h1 className="text-4xl font-bold mb-6">Home</h1>
+                  <h1 className="text-4xl font-bold mb-6">welcome to our chat app</h1>
                   {!islogedin ? (
                     <Link
                       to="/login"
