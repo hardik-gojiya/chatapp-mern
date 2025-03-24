@@ -67,32 +67,47 @@ const handleOtp = async (req, res) => {
         return res.status(400).json({ message: "Invalid OTP" });
       }
     }
-    res.status(400).json({ message: "Invalid action" });
+    return res.status(400).json({ message: "Invalid action" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "An error occurred" });
+    return res.status(500).json({ message: "An error occurred" });
   }
 };
 
 const userLogout = async (req, res) => {
-  const { mobileno } = req.body;
-
+  console.log("Cookies before clearing:", req.cookies);
   try {
-    const user = await User.findOne({ mobileno: String(mobileno) });
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-    user.isVerified = false;
-    await user.save();
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
+      path: "/",
     });
+
     return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     return res.status(500).json({ message: "An error occurred" });
   }
 };
 
-export { handleOtp, userLogout };
+const checkAuth = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ isLoggedIn: false, message: "Invalid token" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    return res.status(200).json({ isLoggedIn: true, mobile: decoded.mobileno });
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ isLoggedIn: false, message: "Invalid token" });
+  }
+};
+
+export { handleOtp, userLogout, checkAuth };

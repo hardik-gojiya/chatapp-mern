@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 import { useNavigate } from "react-router-dom";
+import { useLogin } from "./LoginContext";
 
 function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();
-  const [mobileno, setMobileno] = useState("");
+  const {setIslogedin, setMobileno} = useLogin()
+  const [mobileno, setLocalMobileno] = useState("");
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
 
@@ -26,6 +28,8 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
       });
       console.log(response.data);
       setIsOtpSent(false);
+      setIslogedin(true)
+      setMobileno(mobileno)
       alert("login successful");
       navigate("/");
     } catch (error) {
@@ -66,7 +70,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
           type="tel"
           placeholder="Mobile No"
           value={mobileno}
-          onChange={(e) => setMobileno(e.target.value)}
+          onChange={(e) => setLocalMobileno(e.target.value)}
           required
           className={`w-full p-2 mb-4 border ${
             darkMode
