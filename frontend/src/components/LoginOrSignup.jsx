@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 import { useNavigate } from "react-router-dom";
-import { useLogin } from "./LoginContext";
+import { useLogin } from "./context/LoginContext";
+import { useToast } from "./context/ToastContext";
 
 function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();
-  const {setIslogedin, setMobileno} = useLogin()
+  const { showSuccess, showError } = useToast();
+  const { setIslogedin, setMobileno } = useLogin();
   const [mobileno, setLocalMobileno] = useState("");
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
-
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -28,19 +28,22 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
       });
       console.log(response.data);
       setIsOtpSent(false);
-      setIslogedin(true)
-      setMobileno(mobileno)
-      alert("login successful");
+      setIslogedin(true);
+      setMobileno(mobileno);
+      showSuccess("login successful");
       navigate("/");
     } catch (error) {
       console.log(error);
-      alert("Error while verifying OTP", error);
+      showError("Error while verifying OTP", error);
     }
   };
 
   const sendotp = async (e) => {
     e.preventDefault();
     try {
+      if (!mobileno && mobileno.length < 8) {
+        return alert("enter valid number");
+      }
       const response = await axios.post("http://localhost:5000/api/users/otp", {
         mobileno,
         action: "send",
@@ -49,7 +52,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
       alert(response.data.message);
     } catch (error) {
       console.log(error);
-      alert("Error while sending OTP", error);
+      alert("Error while sending OTP Please check is number is valid", error);
     }
   };
 

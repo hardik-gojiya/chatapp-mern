@@ -2,6 +2,7 @@ import twilio from "twilio";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.model.js";
 import dotenv from "dotenv";
+import { uploadOnClodinary } from "../utils/Cloudnary.js";
 
 dotenv.config();
 
@@ -75,7 +76,6 @@ const handleOtp = async (req, res) => {
 };
 
 const userLogout = async (req, res) => {
-  console.log("Cookies before clearing:", req.cookies);
   try {
     res.clearCookie("token", {
       httpOnly: true,
@@ -101,8 +101,14 @@ const checkAuth = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ mobileno: decoded.mobileno });
 
-    return res.status(200).json({ isLoggedIn: true, mobile: decoded.mobileno });
+    return res.status(200).json({
+      isLoggedIn: true,
+      mobile: decoded.mobileno,
+      name: user.name || "",
+      profilepic: user.profilepic,
+    });
   } catch (error) {
     return res
       .status(401)
@@ -110,4 +116,38 @@ const checkAuth = async (req, res) => {
   }
 };
 
-export { handleOtp, userLogout, checkAuth };
+const updateUserProfile = async (req, res) => {
+  try {
+    const { name, mobileno } = req.body;
+    const profilepic = req.file?.path;
+
+    const user = await User.findOne({ mobileno: Number(mobileno) });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (name) {
+      user.name = name;
+    }
+
+    if (profilepic) {
+      const cloudinarypic = await uploadOnClodinary(profilepic);
+
+      if (cloudinarypic && cloudinarypic.url) {
+        user.profilepic = cloudinarypic.url;
+      } else {
+        console.log("Error uploading to Cloudinary");
+        return res.status(500).json({ message: "Error uploading image" });
+      }
+    }
+
+    await user.save();
+    return res.status(200).json({ message: "User updated successfully", user });
+  } catch (error) {
+    console.log("Error in update profile: ", error);
+    return res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+export { handleOtp, userLogout, checkAuth, updateUserProfile };

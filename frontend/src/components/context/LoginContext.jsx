@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
+import { useToast } from "./ToastContext";
 
 const LoginContext = createContext();
 
@@ -8,8 +9,11 @@ export const useLogin = () => {
 };
 
 export const LoginProvider = ({ children }) => {
+  const { showSuccess, showError } = useToast();
   const [islogedin, setIslogedin] = useState(false);
   const [mobileno, setMobileno] = useState("");
+  const [name, setName] = useState("");
+  const [profilepic, setProfilepic] = useState("");
 
   const checkLoggedin = async () => {
     try {
@@ -17,8 +21,10 @@ export const LoginProvider = ({ children }) => {
         "http://localhost:5000/api/users/check-auth",
         { withCredentials: true }
       );
-      setMobileno(response.data.mobileno);
+      setMobileno(response.data.mobile);
       setIslogedin(response.data.isLoggedIn);
+      setName(response.data.name);
+      setProfilepic(response.data.profilepic);
     } catch (error) {
       console.log(error);
       setIslogedin(false);
@@ -26,25 +32,25 @@ export const LoginProvider = ({ children }) => {
   };
 
   const handleLogout = async () => {
-    if (islogedin && window.confirm.location) {
+    if (islogedin && window.confirm("Are you sure you want to logout?")) {
       try {
         const response = await axios.post(
           "http://localhost:5000/api/users/logout",
-          {}, // No need to send the token explicitly
+          {},
           {
-            withCredentials: true, // Ensures cookies are sent
+            withCredentials: true,
           }
         );
 
         setIslogedin(false);
         setMobileno("");
-        window.location.href = "/";
-        alert(response.data.message);
+        showSuccess(response.data.message);
       } catch (error) {
         console.log("Error in logout:", error);
+        showError("Error in logout");
       }
     } else {
-      alert("You are not logged in");
+      showError("some error occured in logout");
     }
   };
   useEffect(() => {
@@ -53,7 +59,15 @@ export const LoginProvider = ({ children }) => {
 
   return (
     <LoginContext.Provider
-      value={{ islogedin, mobileno, setIslogedin, setMobileno, handleLogout }}
+      value={{
+        islogedin,
+        mobileno,
+        name,
+        profilepic,
+        setIslogedin,
+        setMobileno,
+        handleLogout,
+      }}
     >
       {children}
     </LoginContext.Provider>

@@ -2,7 +2,7 @@ import { User } from "../models/User.model.js";
 import { Message } from "../models/Message.model.js";
 
 const getuserfordashboard = async (req, res) => {
-  try {
+  try { 
     const loggedinUser = req.user._id;
     const filterduser = await User.find({ _id: { $ne: loggedinUser } }).select(
       "-otp"

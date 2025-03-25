@@ -5,9 +5,10 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import Home from "./components/Home";
-import { useLogin } from "./components/LoginContext";
+import { useLogin } from "./components/context/LoginContext";
 import AllChatList from "./components/AllChatList";
 import OneChat from "./components/OneChat";
+import EditProfile from "./components/EditProfile";
 
 function App() {
   const { islogedin, mobileno, handleLogout } = useLogin();
@@ -47,7 +48,7 @@ function App() {
       {islogedin && (
         <AllChatList darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       )}
-      <Router>
+      
         <div className="min-h-screen w-full flex flex-col items-center justify-center">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -60,10 +61,14 @@ function App() {
                 />
               }
             />
-            <Route path='/chat' element={<OneChat />} />
+            <Route path="/chat" element={<OneChat darkMode={darkMode} />} />
+            <Route
+              path="/editprofile"
+              element={<EditProfile darkMode={darkMode} />}
+            />
           </Routes>
         </div>
-      </Router>
+      
     </div>
   );
 }

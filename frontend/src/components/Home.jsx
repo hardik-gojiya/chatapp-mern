@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useLogin } from "./LoginContext";
+import { useLogin } from "./context/LoginContext";
 
 function Home() {
   const { islogedin, mobileno ,handleLogout } = useLogin();
