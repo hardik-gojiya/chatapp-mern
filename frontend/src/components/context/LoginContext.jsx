@@ -14,6 +14,7 @@ export const LoginProvider = ({ children }) => {
   const [mobileno, setMobileno] = useState("");
   const [name, setName] = useState("");
   const [profilepic, setProfilepic] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
 
   const checkLoggedin = async () => {
     try {
@@ -25,6 +26,7 @@ export const LoginProvider = ({ children }) => {
       setIslogedin(response.data.isLoggedIn);
       setName(response.data.name);
       setProfilepic(response.data.profilepic);
+      setCreatedAt(response.data.createdAt)
     } catch (error) {
       console.log(error);
       setIslogedin(false);
@@ -64,6 +66,7 @@ export const LoginProvider = ({ children }) => {
         mobileno,
         name,
         profilepic,
+        createdAt,
         setIslogedin,
         setMobileno,
         handleLogout,

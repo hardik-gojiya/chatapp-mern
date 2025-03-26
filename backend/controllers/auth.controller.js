@@ -108,6 +108,7 @@ const checkAuth = async (req, res) => {
       mobile: decoded.mobileno,
       name: user.name || "",
       profilepic: user.profilepic,
+      createdAt: user.createdAt
     });
   } catch (error) {
     return res
@@ -149,5 +150,20 @@ const updateUserProfile = async (req, res) => {
     return res.status(500).json({ message: "An error occurred" });
   }
 };
+const fetchUser = async (req, res) => {
+  const { id } = req.params;
 
-export { handleOtp, userLogout, checkAuth, updateUserProfile };
+  try {
+    const user = await User.findById(id);
+    if (user) {
+      const name = user.name;
+      const mobileno = user.mobileno;
+      const profilepic = user.profilepic;
+      return res.status(200).json({ name, mobileno, profilepic });
+    }
+  } catch (error) {
+    console.log("error while fetching user", error);
+  }
+};
+
+export { handleOtp, userLogout, checkAuth, updateUserProfile, fetchUser };

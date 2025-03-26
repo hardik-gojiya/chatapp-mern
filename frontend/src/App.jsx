@@ -48,27 +48,26 @@ function App() {
       {islogedin && (
         <AllChatList darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       )}
-      
-        <div className="min-h-screen w-full flex flex-col items-center justify-center">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/login"
-              element={
-                <LoginOrSignup
-                  darkMode={darkMode}
-                  toggleDarkMode={toggleDarkMode}
-                />
-              }
-            />
-            <Route path="/chat" element={<OneChat darkMode={darkMode} />} />
-            <Route
-              path="/editprofile"
-              element={<EditProfile darkMode={darkMode} />}
-            />
-          </Routes>
-        </div>
-      
+
+      <div className="min-h-screen w-full flex flex-col items-center justify-center">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/login"
+            element={
+              <LoginOrSignup
+                darkMode={darkMode}
+                toggleDarkMode={toggleDarkMode}
+              />
+            }
+          />
+          <Route path="/chat/:id" element={<OneChat darkMode={darkMode} />} />
+          <Route
+            path="/editprofile"
+            element={<EditProfile darkMode={darkMode} />}
+          />
+        </Routes>
+      </div>
     </div>
   );
 }

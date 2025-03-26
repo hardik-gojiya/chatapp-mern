@@ -4,6 +4,7 @@ import {
   userLogout,
   checkAuth,
   updateUserProfile,
+  fetchUser,
 } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -20,5 +21,6 @@ router.post(
 );
 
 router.get("/check-auth", checkAuth);
+router.get("/fetchuser/:id", fetchUser);
 
 export default router;

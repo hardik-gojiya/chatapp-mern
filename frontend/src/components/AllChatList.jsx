@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useLogin } from "./context/LoginContext";
+import { useToast } from "./context/ToastContext";
+import OneChat from "./OneChat";
 
 function AllChatList({ darkMode }) {
   const { islogedin } = useLogin();
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState([]);
+  const { showError } = useToast();
 
   const fetchAllChats = async () => {
     try {
@@ -18,7 +21,8 @@ function AllChatList({ darkMode }) {
       );
       const users = response.data || [];
       const formattedChats = users.map((user) => ({
-        id: user.number,
+        paraid: user._id,
+        id: user.mobileno,
         name: user.name,
         avatar: user.profilepic,
         lastMessage: "",
@@ -26,6 +30,7 @@ function AllChatList({ darkMode }) {
       setChats(formattedChats);
     } catch (error) {
       console.log("Error while fetching all chats", error);
+      showError("Error while fetching all chats");
     }
   };
 
@@ -33,7 +38,7 @@ function AllChatList({ darkMode }) {
     if (islogedin) {
       fetchAllChats();
     }
-  }, [islogedin]);
+  }, [islogedin, chats.length]);
 
   const filteredChats = chats.filter((chat) =>
     (chat.name || String(chat.id)).toLowerCase().includes(search.toLowerCase())
@@ -64,8 +69,8 @@ function AllChatList({ darkMode }) {
         {filteredChats.length > 0 ? (
           filteredChats.map((chat, index) => (
             <Link
-              to={`/chat`}
-              key={index}
+              to={`/chat/${chat.paraid}`}
+              key={chat.id}
               className={`flex items-center space-x-3 p-3 rounded-lg ${
                 darkMode ? "hover:bg-gray-700" : "hover:bg-gray-300"
               } transition cursor-pointer`}
@@ -76,7 +81,9 @@ function AllChatList({ darkMode }) {
                 className="w-10 h-10 rounded-full"
               />
               <div className="flex-1">
-                <h3 className="text-sm font-semibold">{chat.name || chat.id}</h3>
+                <h3 className="text-sm font-semibold">
+                  {chat.name || chat.id}
+                </h3>
                 <p
                   className={`text-xs truncate ${
                     darkMode ? "text-gray-400" : "text-gray-600"

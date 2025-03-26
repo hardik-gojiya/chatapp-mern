@@ -35,7 +35,7 @@ const getmessages = async (req, res) => {
 
 const sendmessage = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { sentMsg:message } = req.body;
     const { id: recieverid } = req.params;
     const senderid = req.user._id;
 

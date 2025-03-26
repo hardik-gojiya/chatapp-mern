@@ -4,10 +4,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import multer from "multer";
+import { app, server } from "./utils/Soket.js";
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT;
 
 const corsOptions = { 
@@ -30,4 +30,4 @@ import messageRoute from "./routes/message.routes.js";
 app.use("/api/users", userroutes);
 app.use("/api/message", messageRoute);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 

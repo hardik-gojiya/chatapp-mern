@@ -5,13 +5,16 @@ import "./index.css";
 import App from "./App.jsx";
 import { LoginProvider } from "./components/context/LoginContext.jsx";
 import { ToastProvider } from "./components/context/ToastContext.jsx";
+import { SocketProvider } from "./components/context/SoketContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <ToastProvider>
         <LoginProvider>
-          <App />
+          <SocketProvider>
+            <App />
+          </SocketProvider>
         </LoginProvider>
       </ToastProvider>
     </BrowserRouter>
