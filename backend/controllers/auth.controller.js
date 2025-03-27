@@ -105,10 +105,11 @@ const checkAuth = async (req, res) => {
 
     return res.status(200).json({
       isLoggedIn: true,
+      userId: user._id,
       mobile: decoded.mobileno,
       name: user.name || "",
       profilepic: user.profilepic,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
     });
   } catch (error) {
     return res
@@ -166,4 +167,39 @@ const fetchUser = async (req, res) => {
   }
 };
 
-export { handleOtp, userLogout, checkAuth, updateUserProfile, fetchUser };
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findByIdAndDelete(id);
+    
+
+    if (user) {
+      return res
+        .status(200)
+        .clearCookie("token", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          path: "/",
+        })
+        .json({ message: "User deleted successfully" });
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    } 
+  } catch (error) {
+    console.log("error while deleting user", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while deleting profile" });
+  }
+};
+
+export {
+  handleOtp,
+  userLogout,
+  checkAuth,
+  updateUserProfile,
+  fetchUser,
+  deleteUser,
+};

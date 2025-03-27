@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useLogin } from "./context/LoginContext";
 import { useToast } from "./context/ToastContext";
-import OneChat from "./OneChat";
 
 function AllChatList({ darkMode }) {
   const { islogedin } = useLogin();
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState([]);
   const { showError } = useToast();
+  const { selectId } = useParams();
 
   const fetchAllChats = async () => {
     try {
@@ -48,7 +48,7 @@ function AllChatList({ darkMode }) {
     <div
       className={`h-screen w-72 md:w-96 ${
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-      } shadow-lg p-4 space-y-4 border-l-2 border-r-2`}
+      } shadow-lg p-4 space-y-4 border-l-2  border-r-2 border-blue-500`}
     >
       <div className="mb-4">
         <h2 className="text-xl font-bold">All Chats</h2>
@@ -65,14 +65,22 @@ function AllChatList({ darkMode }) {
             : "bg-gray-100 text-black"
         }`}
       />
-      <div className="flex flex-col space-y-3 overflow-y-auto h-[calc(100vh-140px)] custom-scrollbar">
+      <div
+        className={`flex flex-col space-y-3 overflow-y-auto h-[calc(100vh-140px)] custom-scrollbar `}
+      >
         {filteredChats.length > 0 ? (
           filteredChats.map((chat, index) => (
             <Link
               to={`/chat/${chat.paraid}`}
               key={chat.id}
               className={`flex items-center space-x-3 p-3 rounded-lg ${
-                darkMode ? "hover:bg-gray-700" : "hover:bg-gray-300"
+                darkMode
+                  ? chat.paraid == selectId
+                    ? "bg-blue-700"
+                    : "hover:bg-gray-700"
+                  : chat.paraid == selectId
+                  ? "bg-blue-300"
+                  : "hover:bg-gray-300"
               } transition cursor-pointer`}
             >
               <img

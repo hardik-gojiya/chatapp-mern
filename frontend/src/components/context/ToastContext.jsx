@@ -1,4 +1,3 @@
-// src/ToastContext.js
 import React, { createContext, useContext } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -44,8 +43,30 @@ export const ToastProvider = ({ children }) => {
     });
   };
 
+  const showImageNotification = (imgSrc) => {
+    toast(
+      () => (
+        <div className="flex flex-col items-center gap-2">
+          <img
+            src={imgSrc}
+            alt="Notification Image"
+            className="w-[500px] h-[500px] rounded-lg"
+          />
+        </div>
+      ),
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: true,
+        draggable: false,
+      }
+    );
+  };
+
   return (
-    <ToastContext.Provider value={{ showSuccess, showError, showInfo }}>
+    <ToastContext.Provider
+      value={{ showSuccess, showError, showInfo, showImageNotification }}
+    >
       {children}
       <ToastContainer />
     </ToastContext.Provider>

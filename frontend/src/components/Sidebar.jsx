@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useLogin } from "./context/LoginContext";
 
 function Sidebar({ toggleDarkMode, darkMode, islogedin, handleLogout }) {
-  const { profilepic } = useLogin();
+  const { profilepic, userId } = useLogin();
   return (
     <div className="h-screen w-16 bg-gray-900 text-white flex flex-col items-center p-4 space-y-6 shadow-lg">
       <h2 className="text-2xl font-bold cursor-pointer">≡</h2>
@@ -58,11 +58,11 @@ function Sidebar({ toggleDarkMode, darkMode, islogedin, handleLogout }) {
         )}
       </button>
       {islogedin && (
-        <Link to="/editprofile">
+        <Link to={`/editprofile/${userId}`}>
           <img
             src={profilepic || "/default-profile.png"}
             alt="Profile"
-            className="w-8 h-8 rounded-full border-2 border-blue-500"
+            className="relative  w-8 h-8 rounded-full border-2 border-blue-500"
           />
         </Link>
       )}

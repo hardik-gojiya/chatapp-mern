@@ -10,6 +10,7 @@ export const useLogin = () => {
 
 export const LoginProvider = ({ children }) => {
   const { showSuccess, showError } = useToast();
+  const [userId, setUserId] = useState("");
   const [islogedin, setIslogedin] = useState(false);
   const [mobileno, setMobileno] = useState("");
   const [name, setName] = useState("");
@@ -22,11 +23,12 @@ export const LoginProvider = ({ children }) => {
         "http://localhost:5000/api/users/check-auth",
         { withCredentials: true }
       );
+      setUserId(response.data.userId);
       setMobileno(response.data.mobile);
       setIslogedin(response.data.isLoggedIn);
       setName(response.data.name);
       setProfilepic(response.data.profilepic);
-      setCreatedAt(response.data.createdAt)
+      setCreatedAt(response.data.createdAt);
     } catch (error) {
       console.log(error);
       setIslogedin(false);
@@ -49,7 +51,7 @@ export const LoginProvider = ({ children }) => {
         showSuccess(response.data.message);
       } catch (error) {
         console.log("Error in logout:", error);
-        showError("Error in logout");
+        showError(response.data.error || "Error in logout");
       }
     } else {
       showError("some error occured in logout");
@@ -63,6 +65,7 @@ export const LoginProvider = ({ children }) => {
     <LoginContext.Provider
       value={{
         islogedin,
+        userId,
         mobileno,
         name,
         profilepic,

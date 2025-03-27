@@ -1,8 +1,9 @@
 import { User } from "../models/User.model.js";
 import { Message } from "../models/Message.model.js";
+import { uploadOnClodinary } from "../utils/Cloudnary.js";
 
 const getuserfordashboard = async (req, res) => {
-  try { 
+  try {
     const loggedinUser = req.user._id;
     const filterduser = await User.find({ _id: { $ne: loggedinUser } }).select(
       "-otp"
@@ -35,14 +36,30 @@ const getmessages = async (req, res) => {
 
 const sendmessage = async (req, res) => {
   try {
-    const { sentMsg:message } = req.body;
+    const sentMsg = req.body.sentMsg;
+    const selectedFile = req.file ? req.file.path : null;
     const { id: recieverid } = req.params;
     const senderid = req.user._id;
+
+    if (!sentMsg && !selectedFile) {
+      return res.status(400).json({ error: "Message or file is required" });
+    }
+
+    let fileurl = null;
+
+    if (selectedFile) {
+      const result = await uploadOnClodinary(selectedFile);
+      fileurl = result.secure_url || result.url;
+      if (!fileurl) {
+        return res.status(500).json({ error: "Internal server error" });
+      }
+    }
 
     const newmsg = new Message({
       sender: senderid,
       recipient: recieverid,
-      message: message,
+      message: sentMsg || "",
+      file: fileurl || null,
     });
 
     await newmsg.save();
@@ -54,4 +71,32 @@ const sendmessage = async (req, res) => {
   }
 };
 
-export { getuserfordashboard, getmessages, sendmessage };
+const deleteMsg = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const myid = req.user._id;
+
+    if (!id) {
+      return res.status(400).json({ error: "Message id is required" });
+    }
+
+    const msg = await Message.findById(id);
+    if (!msg) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    if (myid.toString() === msg.sender.toString()) {
+      await msg.deleteOne();
+      return res.status(200).json({ message: "Message deleted successfully" });
+    } else {
+      return res
+        .status(403)
+        .json({ error: "You can only delete your own messages" });
+    }
+  } catch (error) {
+    console.log("error in deleteMsg ", error);
+    res.status(500).json({ error: "internal server error" });
+  }
+};
+
+export { getuserfordashboard, getmessages, sendmessage, deleteMsg };

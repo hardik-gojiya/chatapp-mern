@@ -2,19 +2,25 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useLogin } from "./context/LoginContext";
 import { useToast } from "./context/ToastContext";
+import { useNavigate } from "react-router-dom";
 
 function EditProfile({ darkMode }) {
+  const navigate = useNavigate();
   const {
+    userId,
     mobileno,
     name: initialName,
     profilepic: initialProfilePic,
     createdAt,
+    handleLogout,
   } = useLogin();
   const { showSuccess, showError } = useToast();
   const [name, setName] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [previewPic, setPreviewPic] = useState("");
   const fileInputRef = useRef(null);
+  const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  const deleteMenuRef = useRef(null);
 
   useEffect(() => {
     setName(initialName || "");
@@ -57,6 +63,43 @@ function EditProfile({ darkMode }) {
   const handleProfilePicClick = () => {
     fileInputRef.current.click();
   };
+
+  const handleDeleteProfile = async () => {
+    try {
+      if (!window.confirm("Are you sure you want to delete your profile?")) {
+        return;
+      }
+      const response = await axios.delete(
+        `http://localhost:5000/api/users/deleteProfile/${userId}`
+      );
+      if (response.status === 200) {
+        showSuccess(response.data.message);
+        navigate("/");
+      } else {
+        showError(response.data.error);
+      }
+    } catch (error) {
+      showError("An error occurred while deleting the profile.");
+      console.log("error in deleting profile ", error);
+    }
+  };
+
+  const handleClickOutside = (event) => {
+    if (deleteMenuRef.current && !deleteMenuRef.current.contains(event.target)) {
+      setShowDeleteMenu(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showDeleteMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDeleteMenu]);
 
   return (
     <div
@@ -117,18 +160,50 @@ function EditProfile({ darkMode }) {
         </button>
 
         <p className="p-2">
-          account create at :
-          {" " +
-            new Date(createdAt).toLocaleString("en-IN", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            }) || ""}{" "}
+          Account created at:{" "}
+          {new Date(createdAt).toLocaleString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }) || ""}
         </p>
       </form>
+
+      <div className="relative mt-4" ref={deleteMenuRef}>
+        <button
+          onClick={() => setShowDeleteMenu(!showDeleteMenu)}
+          className={`w-full py-3 text-lg rounded-lg font-semibold tracking-wider transition-all duration-300 ${
+            darkMode
+              ? "bg-red-500 text-white hover:bg-red-600 shadow-lg hover:shadow-red-700/50"
+              : "bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-red-400/50"
+          }`}
+        >
+          Delete Your Profile
+        </button>
+
+        {showDeleteMenu && (
+          <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg z-10">
+            <button
+              onClick={() => {
+                handleDeleteProfile(); 
+                setShowDeleteMenu(false); 
+              }}
+              className="block px-4 py-2 text-sm text-white hover:bg-red-600 rounded-lg w-full text-left"
+            >
+              Confirm Delete
+            </button>
+            <button
+              onClick={() => setShowDeleteMenu(false)}
+              className="block px-4 py-2 text-sm text-white hover:bg-gray-600 rounded-lg w-full text-left"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

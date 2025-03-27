@@ -63,7 +63,7 @@ function App() {
           />
           <Route path="/chat/:id" element={<OneChat darkMode={darkMode} />} />
           <Route
-            path="/editprofile"
+            path="/editprofile/:id"
             element={<EditProfile darkMode={darkMode} />}
           />
         </Routes>
