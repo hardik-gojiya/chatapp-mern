@@ -26,14 +26,13 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
         otp: String(otp),
         action: "verify",
       });
-      console.log(response.data);
       setIsOtpSent(false);
       setIslogedin(true);
       setMobileno(mobileno);
       showSuccess("Login successful");
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.log("Error while verifying OTP", error);
       showError("Error while verifying OTP. Please try again.");
     }
   };
@@ -52,7 +51,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
       setIsOtpSent(true);
       alert(response.data.message);
     } catch (error) {
-      console.log(error);
+      console.log("Error while sending OTP", error);
       alert("Error while sending OTP. Please check if the number is valid.");
     }
   };
