@@ -5,6 +5,7 @@ import {
   getmessages,
   sendmessage,
   deleteMsg,
+  editMsg,
 } from "../controllers/message.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -20,5 +21,6 @@ router.post(
   sendmessage
 );
 router.delete("/delete/:id", protectRoute, deleteMsg);
+router.put("/edit/:id", protectRoute, editMsg);
 
 export default router;

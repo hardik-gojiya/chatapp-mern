@@ -13,6 +13,7 @@ import EditProfile from "./components/EditProfile";
 function App() {
   const { islogedin, mobileno, handleLogout } = useLogin();
   const [darkMode, setDarkMode] = useState(false);
+  const [isOpenAllChat, setIsOpenAllChat] = useState(window.innerWidth >= 700);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("darkMode");
@@ -20,6 +21,17 @@ function App() {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
     }
+
+    const handleWindResize = () => {
+      if (window.innerWidth < 700) {
+        setIsOpenAllChat(false);
+      } else {
+        setIsOpenAllChat(true);
+      }
+    };
+
+    window.addEventListener("resize", handleWindResize);
+    return () => window.removeEventListener("resize", handleWindResize);
   }, []);
 
   const toggleDarkMode = () => {
@@ -36,17 +48,25 @@ function App() {
   return (
     <div
       className={`flex ${
-        darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"
-      }`}
+        darkMode
+          ? "bg-gradient-to-br from-gray-900 to-gray-800 text-white"
+          : "bg-gradient-to-br from-blue-100 to-purple-200 text-gray-900"
+      } `}
     >
       <Sidebar
         toggleDarkMode={toggleDarkMode}
         darkMode={darkMode}
         islogedin={islogedin}
         handleLogout={handleLogout}
+        isOpenAllChat={isOpenAllChat}
+        setIsOpenAllChat={setIsOpenAllChat}
       />
       {islogedin && (
-        <AllChatList darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <AllChatList
+          darkMode={darkMode}
+          toggleDarkMode={toggleDarkMode}
+          isOpenAllChat={isOpenAllChat}
+        />
       )}
 
       <div className="min-h-screen w-full flex flex-col items-center justify-center">
@@ -62,10 +82,14 @@ function App() {
             }
           />
           <Route path="/chat/:id" element={<OneChat darkMode={darkMode} />} />
-          <Route
-            path="/editprofile/:id"
-            element={<EditProfile darkMode={darkMode} />}
-          />
+          {islogedin ? (
+            <Route
+              path="/editprofile/:id"
+              element={<EditProfile darkMode={darkMode} />}
+            />
+          ) : (
+            <Route path="/" element={<Home />} />
+          )}
         </Routes>
       </div>
     </div>

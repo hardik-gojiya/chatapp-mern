@@ -99,4 +99,30 @@ const deleteMsg = async (req, res) => {
   }
 };
 
-export { getuserfordashboard, getmessages, sendmessage, deleteMsg };
+const editMsg = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newMsg } = req.body;
+    const myid = req.user._id;
+
+    if (!newMsg) {
+      return res.status(400).json({ error: "Message is require" });
+    }
+    const oldmsg = await Message.findById(id);
+    if (!oldmsg) {
+      return res.status(400).json({ error: "Message not found" });
+    }
+
+    if (oldmsg.sender.toString() != myid.toString()) {
+      return res.status(400).json({ error: "you only edit your own messages" });
+    }
+    oldmsg.message = newMsg;
+    await oldmsg.save();
+    return res.status(200).json({ error: "Message edited succesfully" });
+  } catch (error) {
+    console.log("error in editMsg ", error);
+    res.status(500).json({ error: "internal server error" });
+  }
+};
+
+export { getuserfordashboard, getmessages, sendmessage, deleteMsg, editMsg };

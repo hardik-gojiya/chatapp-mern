@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { useLogin } from "./context/LoginContext";
 import { useToast } from "./context/ToastContext";
 
-function AllChatList({ darkMode }) {
+function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
   const { islogedin } = useLogin();
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState([]);
@@ -38,6 +38,7 @@ function AllChatList({ darkMode }) {
     if (islogedin) {
       fetchAllChats();
     }
+
   }, [islogedin, chats.length]);
 
   const filteredChats = chats.filter((chat) =>
@@ -45,68 +46,81 @@ function AllChatList({ darkMode }) {
   );
 
   return (
-    <div
-      className={`h-screen w-72 md:w-96 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-      } shadow-lg p-4 space-y-4 border-l-2  border-r-2 border-blue-500`}
-    >
-      <div className="mb-4">
-        <h2 className="text-xl font-bold">All Chats</h2>
-      </div>
-
-      <input
-        type="text"
-        placeholder="Search chats..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className={`w-full p-2 rounded-lg outline-none ${
-          darkMode
-            ? "bg-gray-800 text-white placeholder-gray-400"
-            : "bg-gray-100 text-black"
-        }`}
-      />
-      <div
-        className={`flex flex-col space-y-3 overflow-y-auto h-[calc(100vh-140px)] custom-scrollbar `}
-      >
-        {filteredChats.length > 0 ? (
-          filteredChats.map((chat, index) => (
-            <Link
-              to={`/chat/${chat.paraid}`}
-              key={chat.id}
-              className={`flex items-center space-x-3 p-3 rounded-lg ${
+    <>
+      {isOpenAllChat && (
+        <div
+          className={`h-screen w-72 md:w-96 transition-all duration-300 p-4 border-l-2 border-r-2 ${
+            darkMode
+              ? "bg-gray-900 text-white border-blue-800"
+              : "bg-white text-gray-900 border-blue-400"
+          } shadow-xl ${
+            isOpenAllChat && window.innerWidth < 700
+              ? "absolute left-18 inset-0 z-10 "
+              : "block"
+          }`}
+        >
+          <div className="relative mb-6">
+            <input
+              type="text"
+              placeholder="⌕ Search chats..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className={`w-full p-3 rounded-xl focus:outline-none focus:ring-2 ${
                 darkMode
-                  ? chat.paraid == selectId
-                    ? "bg-blue-700"
-                    : "hover:bg-gray-700"
-                  : chat.paraid == selectId
-                  ? "bg-blue-300"
-                  : "hover:bg-gray-300"
-              } transition cursor-pointer`}
-            >
-              <img
-                src={chat.avatar}
-                alt={chat.name}
-                className="w-10 h-10 rounded-full"
-              />
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold">
-                  {chat.name || chat.id}
-                </h3>
-                <p
-                  className={`text-xs truncate ${
-                    darkMode ? "text-gray-400" : "text-gray-600"
+                  ? "bg-gray-800 text-white border border-gray-700 focus:ring-blue-500"
+                  : "bg-gray-100 text-black border border-gray-300 focus:ring-blue-400"
+              }`}
+            />
+          </div>
+
+          <div
+            className={`flex flex-col space-y-2 overflow-y-auto h-[calc(100vh-140px)] custom-scrollbar ${
+              darkMode ? "scrollbar-dark" : "scrollbar-light"
+            }`}
+          >
+            {filteredChats.length > 0 ? (
+              filteredChats.map((chat) => (
+                <Link
+                  to={`/chat/${chat.paraid}`}
+                  key={chat.id}
+                  className={`flex items-center space-x-4 p-2 rounded-xl shadow-lg transition-all duration-300 ${
+                    darkMode
+                      ? chat.paraid == selectId
+                        ? "bg-gradient-to-r from-blue-600 to-blue-800"
+                        : "bg-gray-800 hover:bg-gray-700"
+                      : chat.paraid == selectId
+                      ? "bg-gradient-to-r from-blue-300 to-blue-500"
+                      : "bg-gray-100 hover:bg-gray-200"
                   }`}
                 >
-                  {chat.lastMessage || "No messages yet"}
-                </p>
-              </div>
-            </Link>
-          ))
-        ) : (
-          <p className="text-gray-400 text-sm text-center">No chats found!</p>
-        )}
-      </div>
-    </div>
+                  <img
+                    src={chat.avatar}
+                    alt={chat.name}
+                    className="w-12 h-12 rounded-full border-2 border-blue-400 shadow-md"
+                  />
+                  <div className="flex-1">
+                    <h3 className="text-base font-semibold truncate">
+                      {chat.name || chat.id}
+                    </h3>
+                    <p
+                      className={`text-xs truncate ${
+                        darkMode ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      {chat.lastMessage}
+                    </p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm text-center">
+                No chats found!
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

@@ -61,6 +61,7 @@ const handleOtp = async (req, res) => {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
+          maxAge: 5 * 24 * 60 * 60 * 1000,
         });
 
         return res.status(200).json({ message: "OTP verified successfully" });
@@ -172,7 +173,6 @@ const deleteUser = async (req, res) => {
 
   try {
     const user = await User.findByIdAndDelete(id);
-    
 
     if (user) {
       return res
@@ -186,7 +186,7 @@ const deleteUser = async (req, res) => {
         .json({ message: "User deleted successfully" });
     } else {
       return res.status(404).json({ message: "User not found" });
-    } 
+    }
   } catch (error) {
     console.log("error while deleting user", error);
     return res

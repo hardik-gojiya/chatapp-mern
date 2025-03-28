@@ -13,7 +13,7 @@ dotenv.config();
 const PORT = process.env.PORT;
 
 const corsOptions = {
-  origin: "http://localhost:5176",
+  origin: ["http://localhost:5174", "http://192.168.50.105:5000"],
   credentials: true,
 };
 

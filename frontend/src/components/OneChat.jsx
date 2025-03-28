@@ -1,20 +1,31 @@
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useToast } from "./context/ToastContext";
 import { useLogin } from "./context/LoginContext";
 import { useSocket } from "./context/SoketContext";
 import axios from "axios";
 import DropDownDelete from "./DropDownDelete";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowLeft,
+  faPaperPlane,
+  faPaperclip,
+  faXmark,
+  faCheck,
+} from "@fortawesome/free-solid-svg-icons";
 
 function OneChat({ darkMode }) {
   const { socket } = useSocket();
 
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [sentMsg, setSentMsg] = useState("");
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const { showError, showSuccess, showImageNotification } = useToast();
+  const { showError, showSuccess } = useToast();
   const [showImage, setShowImage] = useState(null);
+  const [newMsg, setNewMsg] = useState("");
+  const [editingMsgId, setEditingMsgId] = useState(null);
 
   const [reciverDetails, setReciverDetails] = useState({
     name: "user",
@@ -22,7 +33,6 @@ function OneChat({ darkMode }) {
     profilepic: "",
   });
 
-  const { profilepic: thisuserpic, islogedin } = useLogin();
   const { id } = useParams();
 
   const fetchOneChat = async () => {
@@ -44,6 +54,7 @@ function OneChat({ darkMode }) {
       showError("error while fetching your chat");
     }
   };
+
   useEffect(() => {
     fetchOneChat();
 
@@ -59,6 +70,7 @@ function OneChat({ darkMode }) {
 
   const sendMessage = async () => {
     try {
+      setLoading(true);
       if (sentMsg.length > 0 || selectedFile) {
         const formData = new FormData();
 
@@ -83,18 +95,19 @@ function OneChat({ darkMode }) {
             recipient: id,
             createdAt: new Date(),
           });
-          showSuccess("message sent succesfully");
+          showSuccess("message sent successfully");
+          setLoading(false);
         }
         setSentMsg("");
         setSelectedFile(null);
       } else {
-        showError("enter some message");
+        showError("Enter some message.");
       }
     } catch (error) {
       console.log("error while sending chat", error);
-      showError(response.data.error || "error while sending chat");
+      showError("error while sending chat");
     }
-  }; 
+  };
 
   const handlesend = () => {
     sendMessage();
@@ -112,53 +125,75 @@ function OneChat({ darkMode }) {
 
   const handleDeleteMsg = async (id) => {
     try {
+      setLoading(true);
       const response = await axios.delete(
         `http://localhost:5000/api/message/delete/${id}`
       );
       if (response) {
         setMessages((prev) => prev.filter((msg) => msg._id !== id));
-        showSuccess("message deleted successfully");
+        showSuccess("Message deleted successfully.");
       }
+      setLoading(false);
     } catch (error) {
       console.log("error while deleting message", error);
-      showError(error.response?.data?.error || "error while deleting message");
+      showError(error.response?.data?.error || "Error while deleting message");
+    }
+  };
+  const handleEditMsg = async (id) => {
+    try {
+      setLoading(true);
+      const response = await axios.put(
+        `http://localhost:5000/api/message/edit/${id}`,
+        { newMsg: newMsg }
+      );
+      if (response.status === 200) {
+        setNewMsg("");
+        setEditingMsgId(null);
+        setLoading(false);
+      } else {
+        showError("something went wrong");
+      }
+    } catch (error) {
+      console.log("error while editing msg", error);
+      showError(response.data.error || "error while editing message");
     }
   };
 
   return (
     <div
       className={`w-full h-screen flex flex-col justify-between ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
       }`}
     >
       <div
         className={`w-full px-5 py-3 flex items-center gap-3 shadow-md ${
-          darkMode ? "bg-gray-800" : "bg-gray-300"
+          darkMode ? "bg-gray-900" : "bg-gray-300"
         }`}
       >
         <Link
           to="/"
-          className={`py-2 px-4 rounded-lg font-semibold ${
+          className={`py-2 px-4 rounded-lg font-semibold transition duration-300 ${
             darkMode
               ? "bg-gray-700 text-white hover:bg-gray-600"
               : "bg-gray-200 text-black hover:bg-gray-400"
           }`}
         >
-          🡸
+          <FontAwesomeIcon icon={faArrowLeft} />
         </Link>
         <img
           src={reciverDetails.profilepic}
           alt="Contact DP"
-          className="h-10 w-10 rounded-full object-cover cursor-pointer"
+          className="h-12 w-12 rounded-full object-cover cursor-pointer border-2 border-gray-400 hover:scale-110 transition duration-300"
           onClick={() => setShowImage(reciverDetails.profilepic)}
         />
-        <span className="text-lg font-semibold">
+        <span className="text-lg font-semibold truncate max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
           {reciverDetails.name || reciverDetails.mobileno}
         </span>
       </div>
+
       <div
-        className={`flex flex-col mt-5 px-5 overflow-y-auto flex-grow ${
-          darkMode ? "bg-gray-800" : "bg-gray-100"
+        className={`flex flex-col pt-3 px-3 sm:px-5 overflow-y-auto flex-grow space-y-3 ${
+          darkMode ? "bg-gray-800" : "bg-white"
         }`}
       >
         {messages.length > 0 ? (
@@ -172,7 +207,7 @@ function OneChat({ darkMode }) {
                         <img
                           src={message.file}
                           onClick={() => setShowImage(message.file)}
-                          className="w-40 h-40 rounded-lg shadow-md"
+                          className="w-40 h-40 md:w-48 md:h-48 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105"
                           alt="image"
                         />
                       ) : (
@@ -180,17 +215,44 @@ function OneChat({ darkMode }) {
                           href={message.file}
                           target="_blank"
                           rel="noreferrer"
-                          className={`mr-2 py-3 px-4 bg-blue-500 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white break-words max-w-xs md:max-w-sm lg:max-w-md overflow-hidden`}
+                          className="py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg overflow-hidden"
                         >
                           📄 {message.file.split("/").pop()}
                         </a>
                       ))}
                     {message.message.length > 0 && (
-                      <div
-                        className={`mr-2 py-3 px-4 bg-blue-500 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white break-words max-w-xs md:max-w-sm lg:max-w-md overflow-hidden`}
-                      >
-                        {message.message}
-                      </div>
+                      <>
+                        {editingMsgId === message._id ? (
+                          <div className="flex items-center space-x-3 bg-white shadow-md rounded-xl p-3 border border-gray-300 dark:bg-gray-800 dark:border-gray-600">
+                            <input
+                              type="text"
+                              value={newMsg}
+                              onChange={(e) => setNewMsg(e.target.value)}
+                              className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-500"
+                              placeholder="Edit your message..."
+                            />
+                            <button
+                              onClick={() => handleEditMsg(editingMsgId)}
+                              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition-all"
+                            >
+                              <FontAwesomeIcon icon={faCheck} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setNewMsg("");
+                                setEditingMsgId(null);
+                              }}
+                              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition-all"
+                            >
+                              <FontAwesomeIcon icon={faXmark} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg shadow-md break-words whitespace-pre-wrap transition-all transform hover:scale-105 cursor-pointer">
+                            {message.message}
+                          </div>
+                        )}
+                      </>
                     )}
 
                     <span className="text-xs text-gray-400 mt-1">
@@ -204,33 +266,30 @@ function OneChat({ darkMode }) {
                       })}
                     </span>
                   </div>
-                  <div>
-                    <img
-                      src={thisuserpic}
-                      className="object-cover h-8 w-8 rounded-full border-2 border-blue-400"
-                      alt="User"
-                    />
-                    <DropDownDelete
-                      onDelete={() => {
-                        handleDeleteMsg(message._id);
-                      }}
-                    />
-                  </div>
+                  <DropDownDelete
+                    onDelete={() => {
+                      handleDeleteMsg(message._id);
+                    }}
+                    onEdit={() => {
+                      setEditingMsgId(message._id);
+                      setNewMsg(message.message);
+                    }}
+                  />
                 </div>
               ) : (
                 <div className="flex justify-start items-start space-x-2">
                   <img
                     src={reciverDetails.profilepic}
-                    className="object-cover h-8 w-8 rounded-full border-2 border-gray-400"
+                    className="object-cover h-10 w-10 rounded-full border-2 border-gray-400"
                     alt="Receiver"
                   />
-                  <div className="flex flex-col items-start rounded-br-3xl rounded-tr-3xl rounded-tl-xl">
+                  <div className="flex flex-col items-start">
                     {message.file &&
                       (/\.(jpeg|jpg|png|gif)$/i.test(message.file) ? (
                         <img
                           src={message.file}
                           onClick={() => setShowImage(message.file)}
-                          className="w-40 h-40 rounded-lg  "
+                          className="w-40 h-40 md:w-48 md:h-48 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105"
                           alt="image"
                         />
                       ) : (
@@ -238,15 +297,13 @@ function OneChat({ darkMode }) {
                           href={message.file}
                           target="_blank"
                           rel="noreferrer"
-                          className={`mr-2 py-3 px-4 bg-blue-500 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white break-words max-w-xs md:max-w-sm lg:max-w-md overflow-hidden`}
+                          className="py-3 px-4 bg-gradient-to-br from-green-500 to-green-700 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg overflow-hidden"
                         >
                           📄 {message.file.split("/").pop()}
                         </a>
                       ))}
                     {message.message.length > 0 && (
-                      <div
-                        className={`mr-2 py-3 px-4 bg-blue-500 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white break-words max-w-xs md:max-w-sm lg:max-w-md overflow-hidden`}
-                      >
+                      <div className="py-3 px-4 bg-gradient-to-br break-words whitespace-pre-wrap from-green-500 to-green-700 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg shadow-md">
                         {message.message}
                       </div>
                     )}
@@ -271,15 +328,15 @@ function OneChat({ darkMode }) {
       </div>
 
       <div
-        className={`w-full px-5 py-3 flex items-center gap-3 ${
+        className={`w-full px-3 sm:px-5 py-3 flex items-center gap-3 ${
           darkMode ? "bg-gray-800" : "bg-gray-300"
         }`}
       >
         <input
-          className={`flex-grow py-3 px-4 rounded-xl outline-none ${
+          className={`flex-grow py-3 px-4 rounded-xl shadow-md outline-none ${
             darkMode
-              ? "bg-gray-700 text-white placeholder-gray-400"
-              : "bg-white text-black"
+              ? "bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
+              : "bg-white text-black focus:ring-2 focus:ring-blue-500"
           }`}
           type="text"
           value={sentMsg}
@@ -297,75 +354,79 @@ function OneChat({ darkMode }) {
           }}
         />
         <button
-          onClick={() => handleButtonClickForImg()}
-          className={`py-2 px-4 rounded-lg font-semibold ${
+          onClick={handleButtonClickForImg}
+          className={`p-3 rounded-full transition-all duration-300 shadow-md ${
             darkMode
               ? "bg-gray-700 text-white hover:bg-gray-600"
               : "bg-gray-200 text-black hover:bg-gray-400"
           }`}
         >
-          📎
+          <FontAwesomeIcon icon={faPaperclip} />
         </button>
         <button
           onClick={handlesend}
           disabled={!sentMsg && !selectedFile}
-          className={`disabled:bg-gray-700 py-2 px-6 rounded-xl font-semibold ${
+          className={`p-3 rounded-full transition-all duration-300 shadow-md ${
             darkMode
               ? "bg-blue-500 text-white hover:bg-blue-600"
               : "bg-blue-400 text-white hover:bg-blue-500"
-          }  `}
+          }`}
         >
-          <img
-            width="30"
-            height="30"
-            src="https://img.icons8.com/ios-filled/50/FFFFFF/sent.png"
-            alt="sent"
-          />
+          <FontAwesomeIcon icon={faPaperPlane} />
         </button>
         {selectedFile && (
-          <div
-            className={`absolute bottom-20 right-30 flex items-center justify-between p-2 rounded-lg ${
-              darkMode ? "bg-gray-700" : "bg-gray-200"
-            }`}
-          >
-            {selectedFile.type.startsWith("image/") ? (
+          <div className="absolute left-96 bottom-20 flex items-center space-x-3 p-2 border rounded-lg bg-gray-100 shadow-sm">
+            {/\.(jpeg|jpg|png|gif)$/i.test(selectedFile.name) ? (
               <img
                 src={URL.createObjectURL(selectedFile)}
                 alt="Preview"
-                className="w-20 h-20 rounded-lg shadow-md"
+                className="w-20 h-20 object-cover rounded-md"
               />
             ) : (
-              <p className="text-sm text-gray-500">📄 {selectedFile.name}</p>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium truncate max-w-xs">
+                  {selectedFile.name}
+                </span>
+                <FontAwesomeIcon icon={faPaperclip} className="text-gray-500" />
+              </div>
             )}
             <button
               onClick={() => setSelectedFile(null)}
-              className="absolute top-2 right-2 text-xs text-red-500 ml-3"
+              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center shadow-md hover:bg-red-600 transition"
             >
-              🇽
-            </button>
-          </div>
-        )}
-        {showImage && (
-          <div
-            className={`absolute bottom-1/3 right-1/3 flex items-center justify-between p-2 rounded-lg ${
-              darkMode ? "bg-gray-700" : "bg-gray-200"
-            }`}
-          >
-            <img
-              src={showImage}
-              alt="Preview"
-              className="w-96 h-96 rounded-lg shadow-md"
-            />
-
-            <button
-              onClick={() => setShowImage(null)}
-              className="absolute top-4 right-4 text-xs text-red-500 ml-3 cursor-pointer"
-            >
-              🇽
+              ✕
             </button>
           </div>
         )}
       </div>
+      {showImage && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+          onClick={() => setShowImage(null)}
+        >
+          <img
+            src={showImage}
+            alt="Preview"
+            className="max-w-xl max-h-full rounded-lg shadow-lg"
+          />
+          <button
+            onClick={() => setSelectedFile(null)}
+            className="absolute top-2 right-4 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center shadow-md hover:bg-red-600 transition"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      {loading && (
+        <div
+          className="absolute top-5 left-1/2 h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+          role="status"
+        >
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            Loading...
+          </span>
+        </div>
+      )}
     </div>
   );
 }
