@@ -1,4 +1,23 @@
 .env
+# Node Modules
+node_modules/
+
+# Environment Variables
+.env
+.env.local
+
+# Build/Output directories
+/dist
+/build
+/backend/node_modules
+/frontend/node_modules
+/backend/uploads
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 
 # Logs
 logs
