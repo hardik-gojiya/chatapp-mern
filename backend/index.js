@@ -16,7 +16,10 @@ dotenv.config();
 const PORT = process.env.PORT;
 
 const corsOptions = {
-  origin: ["http://localhost:5174", "http://192.168.50.105:5000"],
+  origin: [
+    "http://localhost:5174",
+    "https://chat-in-uanp.onrender.com",
+  ],
   credentials: true,
 };
 
@@ -24,7 +27,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
- 
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log(`MongoDB Connected`))
