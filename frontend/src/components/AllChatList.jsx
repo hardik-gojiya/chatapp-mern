@@ -3,6 +3,9 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { useLogin } from "./context/LoginContext";
 import { useToast } from "./context/ToastContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
+import { useSocket } from "./context/SoketContext";
 
 function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
   const { islogedin } = useLogin();
@@ -10,6 +13,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
   const [chats, setChats] = useState([]);
   const { showError } = useToast();
   const { selectId } = useParams();
+  const { onlineUsers } = useSocket();
 
   const fetchAllChats = async () => {
     try {
@@ -21,7 +25,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
       );
       const users = response.data || [];
       const formattedChats = users.map((user) => ({
-        paraid: user._id,
+        paraid: user._id.toString(),
         id: user.mobileno,
         name: user.name,
         avatar: user.profilepic,
@@ -38,12 +42,23 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
     if (islogedin) {
       fetchAllChats();
     }
-
   }, [islogedin, chats.length]);
 
-  const filteredChats = chats.filter((chat) =>
-    (chat.name || String(chat.id)).toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredChats = chats
+    .filter(
+      (chat) =>
+        (chat.name || String(chat.id))
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        (chat.mobileno || String(chat.id))
+          .toLowerCase()
+          .includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      const aonline = onlineUsers.includes(String(a.paraid));
+      const bonline = onlineUsers.includes(String(b.paraid));
+      return bonline - aonline;
+    });
 
   return (
     <>
@@ -93,11 +108,20 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
                       : "bg-gray-100 hover:bg-gray-200"
                   }`}
                 >
-                  <img
-                    src={chat.avatar}
-                    alt={chat.name}
-                    className="w-12 h-12 rounded-full border-2 border-blue-400 shadow-md"
-                  />
+                  <div className="relative w-12 h-12">
+                    <img
+                      src={chat.avatar}
+                      alt={chat.name}
+                      className="w-12 h-12 rounded-full border-2 border-blue-400 shadow-md"
+                    />
+                    {onlineUsers.includes(String(chat.paraid)) && (
+                      <FontAwesomeIcon
+                        className="absolute -bottom-0 right-0 w-3 h-3 text-green-400"
+                        icon={faCircle}
+                        style={{ color: "#63E6BE" }}
+                      />
+                    )}
+                  </div>
                   <div className="flex-1">
                     <h3 className="text-base font-semibold truncate">
                       {chat.name || chat.id}

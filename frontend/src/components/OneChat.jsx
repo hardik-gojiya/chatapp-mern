@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import "../index.css";
 import { Link, useParams } from "react-router-dom";
 import { useToast } from "./context/ToastContext";
 import { useLogin } from "./context/LoginContext";
@@ -12,7 +13,9 @@ import {
   faPaperclip,
   faXmark,
   faCheck,
+  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
+import ScrollToBottom from "react-scroll-to-bottom";
 
 function OneChat({ darkMode }) {
   const { socket } = useSocket();
@@ -21,6 +24,7 @@ function OneChat({ darkMode }) {
   const [messages, setMessages] = useState([]);
   const [sentMsg, setSentMsg] = useState("");
   const fileInputRef = useRef(null);
+  const goAtEndRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const { showError, showSuccess } = useToast();
   const [showImage, setShowImage] = useState(null);
@@ -34,6 +38,14 @@ function OneChat({ darkMode }) {
   });
 
   const { id } = useParams();
+
+  const handleGoAtEnd = () => {
+    goAtEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    handleGoAtEnd();
+  }, [setMessages]);
 
   const fetchOneChat = async () => {
     try {
@@ -163,10 +175,10 @@ function OneChat({ darkMode }) {
     <div
       className={`w-full h-screen flex flex-col justify-between ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
+      } custom-scrollbar`}
     >
       <div
-        className={`w-full px-5 py-3 flex items-center gap-3 shadow-md ${
+        className={`w-full px-5 py-3 flex items-center gap-3 shadow-md custom-scrollbar ${
           darkMode ? "bg-gray-900" : "bg-gray-300"
         }`}
       >
@@ -192,139 +204,142 @@ function OneChat({ darkMode }) {
       </div>
 
       <div
-        className={`flex flex-col pt-3 px-3 sm:px-5 overflow-y-auto flex-grow space-y-3 ${
+        className={`flex flex-col pt-3 px-3 pb-1 sm:px-5  overflow-y-auto flex-grow space-y-3 custom-scrollbar ${
           darkMode ? "bg-gray-800" : "bg-white"
         }`}
       >
-        {messages.length > 0 ? (
-          messages.map((message) => (
-            <div key={message._id} className="mb-4">
-              {message.recipient === id ? (
-                <div className="flex justify-end items-start space-x-2">
-                  <div className="flex flex-col items-end">
-                    {message.file &&
-                      (/\.(jpeg|jpg|png|gif)$/i.test(message.file) ? (
-                        <img
-                          src={message.file}
-                          onClick={() => setShowImage(message.file)}
-                          className="w-40 h-40 md:w-48 md:h-48 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105"
-                          alt="image"
-                        />
-                      ) : (
-                        <a
-                          href={message.file}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg overflow-hidden"
-                        >
-                          📄 {message.file.split("/").pop()}
-                        </a>
-                      ))}
-                    {message.message.length > 0 && (
-                      <>
-                        {editingMsgId === message._id ? (
-                          <div className="flex items-center space-x-3 bg-white shadow-md rounded-xl p-3 border border-gray-300 dark:bg-gray-800 dark:border-gray-600">
-                            <input
-                              type="text"
-                              value={newMsg}
-                              onChange={(e) => setNewMsg(e.target.value)}
-                              className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-500"
-                              placeholder="Edit your message..."
-                            />
-                            <button
-                              onClick={() => handleEditMsg(editingMsgId)}
-                              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition-all"
-                            >
-                              <FontAwesomeIcon icon={faCheck} />
-                            </button>
-                            <button
-                              onClick={() => {
-                                setNewMsg("");
-                                setEditingMsgId(null);
-                              }}
-                              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition-all"
-                            >
-                              <FontAwesomeIcon icon={faXmark} />
-                            </button>
-                          </div>
+        <ScrollToBottom className="flex-grow overflow-y-auto custom-scrollbar">
+          {messages.length > 0 ? (
+            messages.map((message) => (
+              <div key={message._id} className="mb-4">
+                {message.recipient === id ? (
+                  <div className="flex justify-end items-start space-x-2">
+                    <div className="flex flex-col  items-end">
+                      {message.file &&
+                        (/\.(jpeg|jpg|png|gif)$/i.test(message.file) ? (
+                          <img
+                            src={message.file}
+                            onClick={() => setShowImage(message.file)}
+                            className="w-40 h-40 md:w-48 md:h-48 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105"
+                            alt="image"
+                          />
                         ) : (
-                          <div className="py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg shadow-md break-words whitespace-pre-wrap transition-all transform hover:scale-105 cursor-pointer">
-                            {message.message}
-                          </div>
-                        )}
-                      </>
-                    )}
+                          <a
+                            href={message.file}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg overflow-hidden"
+                          >
+                            📄 {message.file.split("/").pop()}
+                          </a>
+                        ))}
+                      {message.message.length > 0 && (
+                        <>
+                          {editingMsgId === message._id ? (
+                            <div className="flex items-center space-x-3 bg-white shadow-md rounded-xl p-3 border border-gray-300 dark:bg-gray-800 dark:border-gray-600">
+                              <input
+                                type="text"
+                                value={newMsg}
+                                onChange={(e) => setNewMsg(e.target.value)}
+                                className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-500"
+                                placeholder="Edit your message..."
+                              />
+                              <button
+                                onClick={() => handleEditMsg(editingMsgId)}
+                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition-all"
+                              >
+                                <FontAwesomeIcon icon={faCheck} />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setNewMsg("");
+                                  setEditingMsgId(null);
+                                }}
+                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition-all"
+                              >
+                                <FontAwesomeIcon icon={faXmark} />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg shadow-md break-words whitespace-pre-wrap transition-all transform hover:scale-105 cursor-pointer">
+                              {message.message}
+                            </div>
+                          )}
+                        </>
+                      )}
 
-                    <span className="text-xs text-gray-400 mt-1">
-                      {new Date(message.createdAt).toLocaleString("en-IN", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
+                      <span className="text-xs text-gray-400 mt-1">
+                        {new Date(message.createdAt).toLocaleString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    <DropDownDelete
+                      onDelete={() => {
+                        handleDeleteMsg(message._id);
+                      }}
+                      onEdit={() => {
+                        setEditingMsgId(message._id);
+                        setNewMsg(message.message);
+                      }}
+                    />
                   </div>
-                  <DropDownDelete
-                    onDelete={() => {
-                      handleDeleteMsg(message._id);
-                    }}
-                    onEdit={() => {
-                      setEditingMsgId(message._id);
-                      setNewMsg(message.message);
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="flex justify-start items-start space-x-2">
-                  <img
-                    src={reciverDetails.profilepic}
-                    className="object-cover h-10 w-10 rounded-full border-2 border-gray-400"
-                    alt="Receiver"
-                  />
-                  <div className="flex flex-col items-start">
-                    {message.file &&
-                      (/\.(jpeg|jpg|png|gif)$/i.test(message.file) ? (
-                        <img
-                          src={message.file}
-                          onClick={() => setShowImage(message.file)}
-                          className="w-40 h-40 md:w-48 md:h-48 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105"
-                          alt="image"
-                        />
-                      ) : (
-                        <a
-                          href={message.file}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="py-3 px-4 bg-gradient-to-br from-green-500 to-green-700 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg overflow-hidden"
-                        >
-                          📄 {message.file.split("/").pop()}
-                        </a>
-                      ))}
-                    {message.message.length > 0 && (
-                      <div className="py-3 px-4 bg-gradient-to-br break-words whitespace-pre-wrap from-green-500 to-green-700 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg shadow-md">
-                        {message.message}
-                      </div>
-                    )}
-                    <span className="text-xs text-gray-400 mt-1">
-                      {new Date(message.createdAt).toLocaleString("en-IN", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
+                ) : (
+                  <div className="flex justify-start items-start space-x-2">
+                    <img
+                      src={reciverDetails.profilepic}
+                      className="object-cover h-10 w-10 rounded-full border-2 border-gray-400"
+                      alt="Receiver"
+                    />
+                    <div className="flex flex-col items-start">
+                      {message.file &&
+                        (/\.(jpeg|jpg|png|gif)$/i.test(message.file) ? (
+                          <img
+                            src={message.file}
+                            onClick={() => setShowImage(message.file)}
+                            className="w-40 h-40 md:w-48 md:h-48 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105"
+                            alt="image"
+                          />
+                        ) : (
+                          <a
+                            href={message.file}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="py-3 px-4 bg-gradient-to-br from-green-500 to-green-700 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg overflow-hidden"
+                          >
+                            📄 {message.file.split("/").pop()}
+                          </a>
+                        ))}
+                      {message.message.length > 0 && (
+                        <div className="py-3 px-4 bg-gradient-to-br break-words whitespace-pre-wrap from-green-500 to-green-700 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg shadow-md">
+                          {message.message}
+                        </div>
+                      )}
+                      <span className="text-xs text-gray-400 mt-1">
+                        {new Date(message.createdAt).toLocaleString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500 text-center mt-5">No messages yet</p>
-        )}
+                )}
+                <div ref={goAtEndRef}></div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center mt-5">No messages yet</p>
+          )}
+        </ScrollToBottom>
       </div>
 
       <div
@@ -427,6 +442,12 @@ function OneChat({ darkMode }) {
           </span>
         </div>
       )}
+      <button
+        onClick={handleGoAtEnd}
+        className="fixed bottom-20 right-5 bg-gray-500 text-white rounded-full p-2 shadow-md hover:bg-blue-500 btn-glow transition"
+      >
+        <FontAwesomeIcon icon={faChevronDown} />
+      </button>
     </div>
   );
 }

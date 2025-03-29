@@ -24,7 +24,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
+ 
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log(`MongoDB Connected`))

@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+} from "react-router-dom";
 import LoginOrSignup from "./components/LoginOrSignup";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
@@ -90,6 +96,7 @@ function App() {
           ) : (
             <Route path="/" element={<Home />} />
           )}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </div>

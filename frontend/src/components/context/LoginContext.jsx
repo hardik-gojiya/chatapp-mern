@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { useToast } from "./ToastContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginContext = createContext();
 
@@ -9,6 +10,7 @@ export const useLogin = () => {
 };
 
 export const LoginProvider = ({ children }) => {
+  const navigate = useNavigate();
   const { showSuccess, showError } = useToast();
   const [userId, setUserId] = useState("");
   const [islogedin, setIslogedin] = useState(false);
@@ -49,6 +51,7 @@ export const LoginProvider = ({ children }) => {
         setIslogedin(false);
         setMobileno("");
         showSuccess(response.data.message);
+        navigate("/");
       } catch (error) {
         console.log("Error in logout:", error);
         showError(response.data.error || "Error in logout");
