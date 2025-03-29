@@ -21,7 +21,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/users/otp", {
+      const response = await axios.post("https://chat-in-uanp.onrender.com/api/users/otp", {
         mobileno,
         otp: String(otp),
         action: "verify",
@@ -44,7 +44,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/api/users/otp", {
+      const response = await axios.post("https://chat-in-uanp.onrender.com/api/users/otp", {
         mobileno,
         action: "send",
       });

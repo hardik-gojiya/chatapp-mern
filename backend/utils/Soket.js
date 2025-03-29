@@ -7,7 +7,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5174"],
+    origin: ["http://localhost:5174", "https://chat-in-uanp.onrender.com"],
     credentials: true,
   },
   transports: ["websocket", "polling"],
@@ -18,7 +18,7 @@ const onlineUsers = {};
 
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
-  
+
   if (userId) {
     userSocketMap[String(userId)] = socket.id;
   }

@@ -50,10 +50,10 @@ function OneChat({ darkMode }) {
   const fetchOneChat = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/message/chat/${id}`
+        `https://chat-in-uanp.onrender.com/api/message/chat/${id}`
       );
       const reciverres = await axios.get(
-        `http://localhost:5000/api/users/fetchuser/${id}`
+        `https://chat-in-uanp.onrender.com/api/users/fetchuser/${id}`
       );
       setMessages(response.data);
       setReciverDetails({
@@ -92,7 +92,7 @@ function OneChat({ darkMode }) {
           formData.append("selectedFile", selectedFile);
         }
         const response = await axios.post(
-          `http://localhost:5000/api/message/send/${id}`,
+          `https://chat-in-uanp.onrender.com/api/message/send/${id}`,
           formData,
           {
             headers: {
@@ -139,7 +139,7 @@ function OneChat({ darkMode }) {
     try {
       setLoading(true);
       const response = await axios.delete(
-        `http://localhost:5000/api/message/delete/${id}`
+        `https://chat-in-uanp.onrender.com/api/message/delete/${id}`
       );
       if (response) {
         setMessages((prev) => prev.filter((msg) => msg._id !== id));
@@ -155,7 +155,7 @@ function OneChat({ darkMode }) {
     try {
       setLoading(true);
       const response = await axios.put(
-        `http://localhost:5000/api/message/edit/${id}`,
+        `https://chat-in-uanp.onrender.com/api/message/edit/${id}`,
         { newMsg: newMsg }
       );
       if (response.status === 200) {
