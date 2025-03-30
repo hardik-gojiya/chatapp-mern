@@ -12,6 +12,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const [mobileno, setLocalMobileno] = useState("");
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,19 +22,25 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
     }
 
     try {
-      const response = await axios.post("https://chat-in-uanp.onrender.com/api/users/otp", {
-        mobileno,
-        otp: String(otp),
-        action: "verify",
-      });
+      setLoading(true);
+      const response = await axios.post(
+        "https://chat-in-uanp.onrender.com/api/users/otp",
+        {
+          mobileno,
+          otp: String(otp),
+          action: "verify",
+        }
+      );
       setIsOtpSent(false);
       setIslogedin(true);
       setMobileno(mobileno);
       showSuccess("Login successful");
       navigate("/");
+      setLoading(false);
     } catch (error) {
       console.log("Error while verifying OTP", error);
       showError("Error while verifying OTP. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -44,31 +51,35 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
       return;
     }
     try {
-      const response = await axios.post("https://chat-in-uanp.onrender.com/api/users/otp", {
-        mobileno,
-        action: "send",
-      });
+      setLoading(true);
+      const response = await axios.post(
+        "https://chat-in-uanp.onrender.com/api/users/otp",
+        {
+          mobileno,
+          action: "send",
+        }
+      );
       setIsOtpSent(true);
       alert(response.data.message);
+      setLoading(false);
     } catch (error) {
       console.log("Error while sending OTP", error);
       alert("Error while sending OTP. Please check if the number is valid.");
+      setLoading(false);
     }
   };
 
   return (
-    <div
-      className={`min-h-screen flex flex-col items-center justify-center transition-all duration-300 `}
-    >
+    <div className="h-full w-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div
-        className={`w-96 p-8 rounded-2xl bg-opacity-90 shadow-2xl ${
+        className={`w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-6 sm:p-8 md:p-10 rounded-2xl shadow-2xl ${
           darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-        } backdrop-blur-lg border ${
+        } border ${
           darkMode ? "border-gray-700" : "border-gray-200"
-        }`}
+        } transition-all duration-300`}
       >
         <h1
-          className={`text-4xl text-center font-extrabold mb-8 ${
+          className={`text-2xl sm:text-3xl md:text-4xl text-center font-extrabold mb-6 ${
             darkMode ? "text-white" : "text-blue-600"
           }`}
         >
@@ -82,7 +93,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
             value={mobileno}
             onChange={(e) => setLocalMobileno(e.target.value)}
             required
-            className={`w-full p-3 rounded-lg shadow-inner focus:ring-4 focus:outline-none transition-all duration-300 ${
+            className={`w-full p-3 sm:p-4 rounded-lg shadow-inner focus:ring-4 focus:outline-none transition-all duration-300 ${
               darkMode
                 ? "bg-gray-700 text-white border border-gray-500"
                 : "bg-white text-black border border-gray-300"
@@ -97,7 +108,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               placeholder="Enter OTP"
-              className={`w-full p-3 rounded-lg shadow-inner focus:ring-4 focus:outline-none transition-all duration-300 ${
+              className={`w-full p-3 sm:p-4 rounded-lg shadow-inner focus:ring-4 focus:outline-none transition-all duration-300 ${
                 darkMode
                   ? "bg-gray-700 text-white border border-gray-500 focus:ring-green-400"
                   : "bg-white text-black border border-gray-300 focus:ring-green-400"
@@ -109,7 +120,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
         <button
           onClick={sendotp}
           type="button"
-          className={`w-full py-3 rounded-lg text-white font-bold transition-all duration-300 shadow-md ${
+          className={`w-full py-3 sm:py-4 rounded-lg text-white font-bold transition-all duration-300 shadow-md ${
             isOtpSent
               ? "bg-yellow-500 hover:bg-yellow-600 focus:ring-yellow-300"
               : "bg-blue-500 hover:bg-blue-600 focus:ring-blue-300"
@@ -121,13 +132,13 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
         <button
           type="submit"
           onClick={handleLogin}
-          className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-bold transition-all duration-300 shadow-md focus:outline-none focus:ring-4 focus:ring-green-300"
+          className="w-full bg-green-500 hover:bg-green-600 text-white py-3 sm:py-4 rounded-lg font-bold transition-all duration-300 shadow-md focus:outline-none focus:ring-4 focus:ring-green-300"
         >
           Login
         </button>
 
         <p
-          className={`mt-6 text-sm ${
+          className={`mt-6 text-sm text-center ${
             darkMode ? "text-gray-400" : "text-gray-600"
           }`}
         >
@@ -136,6 +147,16 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
             : "Enter your mobile number to receive OTP"}
         </p>
       </div>
+      {loading && (
+        <div
+          className="absolute top-5 left-1/2 h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+          role="status"
+        >
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            Loading...
+          </span>
+        </div>
+      )}
     </div>
   );
 }

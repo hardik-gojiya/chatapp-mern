@@ -3,12 +3,9 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link,
   Navigate,
 } from "react-router-dom";
 import LoginOrSignup from "./components/LoginOrSignup";
-import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import Home from "./components/Home";
 import { useLogin } from "./components/context/LoginContext";
@@ -53,7 +50,7 @@ function App() {
 
   return (
     <div
-      className={`flex ${
+      className={`flex h-full w-full ${
         darkMode
           ? "bg-gradient-to-br from-gray-900 to-gray-800 text-white"
           : "bg-gradient-to-br from-blue-100 to-purple-200 text-gray-900"

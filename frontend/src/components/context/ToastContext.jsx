@@ -16,6 +16,7 @@ export const ToastProvider = ({ children }) => {
       pauseOnHover: true,
       draggable: true,
       theme: "colored",
+      style: { maxWidth: "90%", wordBreak: "break-word" },
     });
   };
 
@@ -28,6 +29,7 @@ export const ToastProvider = ({ children }) => {
       pauseOnHover: true,
       draggable: true,
       theme: "colored",
+      style: { maxWidth: "90%", wordBreak: "break-word" },
     });
   };
 
@@ -40,6 +42,7 @@ export const ToastProvider = ({ children }) => {
       pauseOnHover: true,
       draggable: true,
       theme: "colored",
+      style: { maxWidth: "90%", wordBreak: "break-word" },
     });
   };
 
@@ -50,7 +53,7 @@ export const ToastProvider = ({ children }) => {
           <img
             src={imgSrc}
             alt="Notification Image"
-            className="w-[500px] h-[500px] rounded-lg"
+            className="w-full max-w-[250px] h-auto rounded-lg shadow-lg"
           />
         </div>
       ),
@@ -59,6 +62,7 @@ export const ToastProvider = ({ children }) => {
         autoClose: false,
         closeOnClick: true,
         draggable: false,
+        style: { maxWidth: "90%" },
       }
     );
   };

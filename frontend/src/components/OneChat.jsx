@@ -114,10 +114,12 @@ function OneChat({ darkMode }) {
         setSelectedFile(null);
       } else {
         showError("Enter some message.");
+        setLoading(false);
       }
     } catch (error) {
       console.log("error while sending chat", error);
       showError("error while sending chat");
+      setLoading(false);
     }
   };
 

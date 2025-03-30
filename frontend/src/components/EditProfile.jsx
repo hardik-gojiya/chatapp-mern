@@ -3,8 +3,8 @@ import axios from "axios";
 import { useLogin } from "./context/LoginContext";
 import { useToast } from "./context/ToastContext";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 function EditProfile({ darkMode }) {
   const navigate = useNavigate();
@@ -16,6 +16,8 @@ function EditProfile({ darkMode }) {
     createdAt,
     handleLogout,
   } = useLogin();
+
+  const [loading, setLoading] = useState(false);
   const { showSuccess, showError } = useToast();
   const [name, setName] = useState("");
   const [profilePic, setProfilePic] = useState(null);
@@ -46,6 +48,7 @@ function EditProfile({ darkMode }) {
       formData.append("profilepic", profilePic);
     }
     try {
+      setLoading(true);
       const response = await axios.post(
         `https://chat-in-uanp.onrender.com/api/users/editprofile`,
         formData,
@@ -57,8 +60,10 @@ function EditProfile({ darkMode }) {
         }
       );
       showSuccess(response.data.message);
+      setLoading(false);
     } catch (error) {
       showError("An error occurred while updating the profile.");
+      setLoading(false);
     }
   };
 
@@ -71,23 +76,30 @@ function EditProfile({ darkMode }) {
       if (!window.confirm("Are you sure you want to delete your profile?")) {
         return;
       }
+      setLoading(true);
       const response = await axios.delete(
         `https://chat-in-uanp.onrender.com/api/users/deleteProfile/${userId}`
       );
       if (response.status === 200) {
         showSuccess(response.data.message);
         navigate("/");
+        setLoading(false);
       } else {
         showError(response.data.error);
+        setLoading(false);
       }
     } catch (error) {
       showError("An error occurred while deleting the profile.");
       console.log("error in deleting profile ", error);
+      setLoading(false);
     }
   };
 
   const handleClickOutside = (event) => {
-    if (deleteMenuRef.current && !deleteMenuRef.current.contains(event.target)) {
+    if (
+      deleteMenuRef.current &&
+      !deleteMenuRef.current.contains(event.target)
+    ) {
       setShowDeleteMenu(false);
     }
   };
@@ -103,10 +115,8 @@ function EditProfile({ darkMode }) {
     };
   }, [showDeleteMenu]);
 
-  return  (
-    <div
-      className={`min-h-screen flex items-center justify-center `}
-    >
+  return (
+    <div className={`min-h-screen flex items-center justify-center `}>
       <div
         className={`w-full max-w-2xl p-8 rounded-2xl shadow-2xl bg-opacity-80 backdrop-blur-lg ${
           darkMode
@@ -207,6 +217,16 @@ function EditProfile({ darkMode }) {
           )}
         </div>
       </div>
+      {loading && (
+        <div
+          className="absolute top-5 left-1/2 h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+          role="status"
+        >
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            Loading...
+          </span>
+        </div>
+      )}
     </div>
   );
 }
