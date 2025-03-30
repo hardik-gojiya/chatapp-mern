@@ -21,15 +21,13 @@ function Sidebar({
   const { profilepic, userId } = useLogin();
 
   return (
-    <div
-      className={`h-screen w-14 sm:w-16 bg-gray-900 text-white flex flex-col items-center p-3 sm:p-4 space-y-4 sm:space-y-6 shadow-lg`}
-    >
-      {/* Toggle Chat Sidebar */}
+    <>
       <h2
-        className="text-xl sm:text-2xl font-bold cursor-pointer"
+        className="absolute top-5 z-50 left-5 text-xl sm:text-2xl font-bold cursor-pointer"
         onClick={() => {
           setIsOpenAllChat(!isOpenAllChat);
         }}
+        
       >
         {isOpenAllChat ? (
           <FontAwesomeIcon icon={faXmark} />
@@ -37,53 +35,64 @@ function Sidebar({
           <FontAwesomeIcon icon={faBars} />
         )}
       </h2>
-
-      {/* Home Button */}
-      <Link
-        to="/"
-        className="text-lg sm:text-2xl w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-blue-500 transition"
-      >
-        <FontAwesomeIcon icon={faHouse} />
-      </Link>
-
-      {/* Login / Logout */}
-      {islogedin ? (
-        <button
-          onClick={handleLogout}
-          title="Logout"
-          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-red-500 rounded-lg hover:bg-red-600 transition"
+      {isOpenAllChat && (
+        <div
+          className={`h-screen  w-14 sm:w-16 bg-gray-900 text-white flex flex-col items-center pt-18 sm:pt-18 sm:p-4 space-y-4 sm:space-y-6 shadow-lg ${
+            isOpenAllChat && window.innerWidth < 700
+              ? "absolute left-0 inset-0 z-10 "
+              : "block"
+          }`}
         >
-          <FontAwesomeIcon icon={faArrowRightFromBracket} />
-        </button>
-      ) : (
-        <Link
-          to="/login"
-          title="Login"
-          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-blue-500 rounded-lg hover:bg-blue-600 transition"
-        >
-          <FontAwesomeIcon icon={faArrowRightToBracket} />
-        </Link>
-      )}
+          {/* Toggle Chat Sidebar */}
 
-      {/* Dark Mode Toggle */}
-      <button
-        onClick={toggleDarkMode}
-        className={`p-2 rounded-full cursor-pointer bg-gray-700 hover:bg-gray-600 text-yellow-300 transition-all duration-300`}
-      >
-        {darkMode ? "🌙" : "☀️"}
-      </button>
+          {/* Home Button */}
+          <Link
+            to="/"
+            className="text-lg sm:text-2xl w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-blue-500 transition"
+          >
+            <FontAwesomeIcon icon={faHouse} />
+          </Link>
 
-      {/* Profile Picture */}
-      {islogedin && (
-        <Link to={`/editprofile/${userId}`}>
-          <img
-            src={profilepic || "/default-profile.png"}
-            alt="Profile"
-            className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-blue-500"
-          />
-        </Link>
+          {/* Login / Logout */}
+          {islogedin ? (
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-red-500 rounded-lg hover:bg-red-600 transition"
+            >
+              <FontAwesomeIcon icon={faArrowRightFromBracket} />
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              title="Login"
+              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-blue-500 rounded-lg hover:bg-blue-600 transition"
+            >
+              <FontAwesomeIcon icon={faArrowRightToBracket} />
+            </Link>
+          )}
+
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleDarkMode}
+            className={`p-2 rounded-full cursor-pointer bg-gray-700 hover:bg-gray-600 text-yellow-300 transition-all duration-300`}
+          >
+            {darkMode ? "🌙" : "☀️"}
+          </button>
+
+          {/* Profile Picture */}
+          {islogedin && (
+            <Link to={`/editprofile/${userId}`}>
+              <img
+                src={profilepic || "/default-profile.png"}
+                alt="Profile"
+                className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-blue-500"
+              />
+            </Link>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 }
 
