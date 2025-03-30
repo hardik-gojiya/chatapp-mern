@@ -180,7 +180,7 @@ function OneChat({ darkMode }) {
       } custom-scrollbar`}
     >
       <div
-        className={`w-full px-5 py-3 flex items-center gap-3 shadow-md custom-scrollbar ${
+        className={`w-full px-20 py-3 flex items-center gap-3 shadow-md custom-scrollbar ${
           darkMode ? "bg-gray-900" : "bg-gray-300"
         }`}
       >
