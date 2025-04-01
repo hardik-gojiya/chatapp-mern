@@ -1,6 +1,7 @@
 import express from "express";
 import {
-  handleOtp,
+  sendOtp,
+  verifyOtp,
   userLogout,
   checkAuth,
   updateUserProfile,
@@ -12,7 +13,8 @@ import { upload } from "../middlewares/multer.middleware.js";
 
 const router = express.Router();
 
-router.post("/otp", handleOtp);
+router.post("/sendotp", sendOtp);
+router.post("/verifyOtp", verifyOtp);
 router.post("/logout", protectRoute, userLogout);
 router.post(
   "/editprofile",

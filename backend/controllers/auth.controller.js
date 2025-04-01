@@ -1,4 +1,5 @@
-import twilio from "twilio";
+// import twilio from "twilio";
+import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.model.js";
 import dotenv from "dotenv";
@@ -6,7 +7,17 @@ import { uploadOnClodinary } from "../utils/Cloudnary.js";
 
 dotenv.config();
 
-const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+// const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 const generateOtp = () => {
   return Math.floor(10000 + Math.random() * 90000);
 };
@@ -19,62 +30,194 @@ const generateToken = (user) => {
   );
 };
 
-const handleOtp = async (req, res) => {
-  const { mobileno, otp, action } = req.body;
+const sendOtp = async (req, res) => {
+  const { email, mobileno } = req.body;
 
   if (!mobileno) {
-    return res.status(400).json({ message: "Phone number is required" });
+    return res.status(400).json({ error: "Phone number is required" });
   }
-
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+  const newotp = generateOtp();
+  let user = await User.findOne({
+    $or: [{ mobileno: String(mobileno) }, { email: String(email) }],
+  });
   try {
-    if (action === "send") {
-      const newotp = generateOtp();
-      let user = await User.findOne({ mobileno: String(mobileno) });
-
-      if (!user) {
-        user = new User({ mobileno: String(mobileno), otp: String(newotp) });
-      } else {
-        user.otp = String(newotp);
+    if (user) {
+      if (user.email !== email || user.mobileno !== mobileno) {
+        return res
+          .status(400)
+          .json({ error: "Email or Phone number already exists" });
       }
 
+      user.otp = String(newotp);
       await user.save();
-
-      await client.messages.create({
-        body: `Your OTP for login chatapp is ${newotp}`,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to: `+91${mobileno}`,
+    } else {
+      user = new User({
+        email: String(email),
+        mobileno: String(mobileno),
+        otp: String(newotp),
       });
-
-      return res.status(200).json({ message: "OTP sent successfully" });
     }
-    if (action === "verify") {
-      const user = await User.findOne({ mobileno: String(mobileno) });
 
-      if (user && user.otp === String(otp)) {
-        user.isVerified = true;
-        user.otp = undefined;
-        await user.save();
+    const mailOptions = {
+      from: `Chat-In <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your OTP for Verification for Chat-In",
+      text: `Your OTP for Chat-In application is: ${newotp}`,
+      html: `<h2>Your OTP for Chat-In application is: <b>${newotp}</b></h2>`,
+    };
 
-        const token = generateToken(user);
-
-        res.cookie("token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 5 * 24 * 60 * 60 * 1000,
-        });
-
-        return res.status(200).json({ message: "OTP verified successfully" });
-      } else {
-        return res.status(400).json({ message: "Invalid OTP" });
-      }
+    const info = await transporter.sendMail(mailOptions);
+    if (!info || !info.accepted || info.accepted.length === 0) {
+      return res.status(500).json({ error: "Failed to send OTP" });
     }
-    return res.status(400).json({ message: "Invalid action" });
+    return res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "An error occurred" });
+    console.log("Error sending OTP: ", error);
+    if (user) {
+      user.otp = undefined;
+      await user.save();
+    }
+    return res.status(500).json({ error: "Error sending OTP" });
   }
 };
+
+const verifyOtp = async (req, res) => {
+  const { email, mobileno, otp } = req.body;
+
+  if (!mobileno) {
+    return res.status(400).json({ error: "Phone number is required" });
+  }
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+  if (!otp) {
+    return res.status(400).json({ error: "otp is required" });
+  }
+
+  let user = await User.findOne({
+    $or: [{ mobileno: String(mobileno) }, { email: String(email) }],
+  });
+
+  try {
+    if (user && user.otp === String(otp)) {
+      user.isVerified = true;
+      user.otp = undefined;
+      await user.save();
+      const token = generateToken(user);
+
+      res.cookie("token", token, {
+        httpOnltly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 5 * 24 * 60 * 60 * 1000,
+      });
+      return res.status(200).json({ message: "OTP varifying succesfully" });
+    }
+    return res.status(200).json({ error: "error while verifying otp" });
+  } catch (error) {
+    console.log("Error verifying OTP: ", error);
+    if (user) {
+      user.otp = undefined;
+      await user.save();
+    }
+    return res
+      .status(500)
+      .json({ error: "Error verifying OTP, check your otp" });
+  }
+};
+
+// const handleOtp = async (req, res) => {
+//   const { email, mobileno, otp, action } = req.body;
+
+//   if (!mobileno) {
+//     return res.status(400).json({ message: "Phone number is required" });
+//   }
+//   if (!email) {
+//     return res.status(400).json({ message: "Email is required" });
+//   }
+
+//   const newotp = generateOtp();
+//   let user = await User.findOne({
+//     $or: [{ mobileno: String(mobileno) }, { email: String(email) }],
+//   });
+
+//   const mailOptions = {
+//     from: `Chat-In <${process.env.EMAIL_USER}>`,
+//     to: email,
+//     subject: "Your OTP for Verification for Chat-In",
+//     text: `Your OTP for Chat-In application is: ${newotp}`,
+//     html: `<h2>Your OTP for Chat-In application is: <b>${newotp}</b></h2>`,
+//   };
+
+//   try {
+//     if (action === "send") {
+//       if (!user) {
+//         user = new User({
+//           email: String(email),
+//           mobileno: String(mobileno),
+//           otp: String(newotp),
+//         });
+//       } else {
+//         user.email = String(email);
+//         user.mobileno = String(mobileno);
+//         user.otp = String(newotp);
+//       }
+
+//       await user.save();
+
+//       // await client.messages.create({
+//       //   body: `Your OTP for login chatapp is ${newotp}`,
+//       //   from: process.env.TWILIO_PHONE_NUMBER,
+//       //   to: `+91${mobileno}`,
+//       // });
+
+//       const info = await transporter.sendMail(mailOptions);
+//       if (!info || !info.accepted || info.accepted.length === 0) {
+//         return res.status(500).json({ message: "Failed to send OTP" });
+//       }
+
+//       return res.status(200).json({ message: "OTP sent successfully" });
+//     }
+//   } catch (error) {
+//     console.log("Error sending OTP: ", error);
+//     user.otp = undefined;
+//     await user.save();
+//     return res.status(500).json({ message: "Error sending OTP" });
+//   }
+//   try {
+//     if (action === "verify") {
+//       const user = await User.findOne({ mobileno: String(mobileno) });
+
+//       if (user && user.otp === String(otp)) {
+//         user.isVerified = true;
+//         user.otp = undefined;
+//         await user.save();
+
+//         const token = generateToken(user);
+
+//         res.cookie("token", token, {
+//           httpOnly: true,
+//           secure: process.env.NODE_ENV === "production",
+//           sameSite: "strict",
+//           maxAge: 5 * 24 * 60 * 60 * 1000,
+//         });
+
+//         return res.status(200).json({ message: "OTP verified successfully" });
+//       } else {
+//         return res.status(400).json({ message: "Invalid OTP" });
+//       }
+//     }
+//     return res.status(400).json({ message: "Invalid action" });
+//   } catch (error) {
+//     console.log("Error verifying OTP: ", error);
+//     user.otp = undefined;
+//     await user.save();
+//     return res.status(500).json({ message: "Error verifying OTP" });
+//   }
+// };
 
 const userLogout = async (req, res) => {
   try {
@@ -107,6 +250,7 @@ const checkAuth = async (req, res) => {
     return res.status(200).json({
       isLoggedIn: true,
       userId: user._id,
+      email: user.email,
       mobile: decoded.mobileno,
       name: user.name || "",
       profilepic: user.profilepic,
@@ -159,6 +303,7 @@ const fetchUser = async (req, res) => {
     const user = await User.findById(id);
     if (user) {
       const name = user.name;
+      const email = user.email;
       const mobileno = user.mobileno;
       const profilepic = user.profilepic;
       return res.status(200).json({ name, mobileno, profilepic });
@@ -196,7 +341,8 @@ const deleteUser = async (req, res) => {
 };
 
 export {
-  handleOtp,
+  sendOtp,
+  verifyOtp,
   userLogout,
   checkAuth,
   updateUserProfile,
