@@ -25,40 +25,30 @@ const generateOtp = () => {
 const generateToken = (user) => {
   return jwt.sign(
     { id: user._id, mobileno: user.mobileno },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE }
+    process.env.JWT_SECRET
   );
 };
 
 const sendOtp = async (req, res) => {
-  const { email, mobileno } = req.body;
+  const { email } = req.body;
 
-  if (!mobileno) {
-    return res.status(400).json({ error: "Phone number is required" });
-  }
   if (!email) {
     return res.status(400).json({ error: "Email is required" });
   }
   const newotp = generateOtp();
   let user = await User.findOne({
-    $or: [{ mobileno: String(mobileno) }, { email: String(email) }],
+    email: String(email),
   });
   try {
     if (user) {
-      if (user.email !== email || user.mobileno !== mobileno) {
-        return res
-          .status(400)
-          .json({ error: "Email or Phone number already exists" });
-      }
-
       user.otp = String(newotp);
       await user.save();
     } else {
       user = new User({
         email: String(email),
-        mobileno: String(mobileno),
         otp: String(newotp),
       });
+      await user.save();
     }
 
     const mailOptions = {
@@ -85,11 +75,8 @@ const sendOtp = async (req, res) => {
 };
 
 const verifyOtp = async (req, res) => {
-  const { email, mobileno, otp } = req.body;
+  const { email, otp } = req.body;
 
-  if (!mobileno) {
-    return res.status(400).json({ error: "Phone number is required" });
-  }
   if (!email) {
     return res.status(400).json({ error: "Email is required" });
   }
@@ -98,7 +85,7 @@ const verifyOtp = async (req, res) => {
   }
 
   let user = await User.findOne({
-    $or: [{ mobileno: String(mobileno) }, { email: String(email) }],
+    email: String(email),
   });
 
   try {
@@ -245,13 +232,13 @@ const checkAuth = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ mobileno: decoded.mobileno });
+
+    const user = await User.findById(decoded.id);
 
     return res.status(200).json({
       isLoggedIn: true,
       userId: user._id,
       email: user.email,
-      mobile: decoded.mobileno,
       name: user.name || "",
       profilepic: user.profilepic,
       createdAt: user.createdAt,
@@ -265,10 +252,10 @@ const checkAuth = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const { name, mobileno } = req.body;
+    const { name, email, mobileno } = req.body;
     const profilepic = req.file?.path;
 
-    const user = await User.findOne({ mobileno: Number(mobileno) });
+    const user = await User.findOne({ email: String(email) });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -276,6 +263,9 @@ const updateUserProfile = async (req, res) => {
 
     if (name) {
       user.name = name;
+    }
+    if (mobileno) {
+      user.mobileno = mobileno;
     }
 
     if (profilepic) {
@@ -304,9 +294,8 @@ const fetchUser = async (req, res) => {
     if (user) {
       const name = user.name;
       const email = user.email;
-      const mobileno = user.mobileno;
       const profilepic = user.profilepic;
-      return res.status(200).json({ name, mobileno, profilepic });
+      return res.status(200).json({ name, email, profilepic });
     }
   } catch (error) {
     console.log("error while fetching user", error);

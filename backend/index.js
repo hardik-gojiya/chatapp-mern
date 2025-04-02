@@ -18,6 +18,7 @@ const PORT = process.env.PORT;
 const corsOptions = {
   origin: [
     "http://localhost:5174",
+    "http://localhost:5000",
     "https://chat-in-uanp.onrender.com",
   ],
   credentials: true,

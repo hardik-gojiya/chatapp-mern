@@ -14,7 +14,7 @@ export const LoginProvider = ({ children }) => {
   const { showSuccess, showError } = useToast();
   const [userId, setUserId] = useState("");
   const [islogedin, setIslogedin] = useState(false);
-  const [mobileno, setMobileno] = useState("");
+  const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [profilepic, setProfilepic] = useState("");
   const [createdAt, setCreatedAt] = useState("");
@@ -26,7 +26,7 @@ export const LoginProvider = ({ children }) => {
         { withCredentials: true }
       );
       setUserId(response.data.userId);
-      setMobileno(response.data.mobile);
+      setEmail(response.data.email);
       setIslogedin(response.data.isLoggedIn);
       setName(response.data.name);
       setProfilepic(response.data.profilepic);
@@ -49,12 +49,12 @@ export const LoginProvider = ({ children }) => {
         );
 
         setIslogedin(false);
-        setMobileno("");
+        setEmail("");
         showSuccess(response.data.message);
         navigate("/");
       } catch (error) {
         console.log("Error in logout:", error);
-        showError(response.data.error || "Error in logout");
+        showError(error.response.data.error || "Error in logout");
       }
     } else {
       showError("some error occured in logout");
@@ -69,12 +69,12 @@ export const LoginProvider = ({ children }) => {
       value={{
         islogedin,
         userId,
-        mobileno,
+        email,
         name,
         profilepic,
         createdAt,
         setIslogedin,
-        setMobileno,
+        setEmail,
         handleLogout,
       }}
     >

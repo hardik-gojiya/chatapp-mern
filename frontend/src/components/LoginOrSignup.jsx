@@ -9,7 +9,6 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();
   const { showSuccess, showError } = useToast();
   const { setIslogedin, setMobileno } = useLogin();
-  const [mobileno, setLocalMobileno] = useState("");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
@@ -24,24 +23,23 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
 
     try {
       setLoading(true);
-      const response = await axios.post(
+      var response = await axios.post(
         "https://chat-in-uanp.onrender.com/api/users/verifyOtp",
         {
           email,
-          mobileno,
           otp: String(otp),
         }
       );
       setIsOtpSent(false);
       setIslogedin(true);
-      setMobileno(mobileno);
-      showSuccess("Login successful");
+      showSuccess(response.data.message || "Login successful");
       navigate("/");
       setLoading(false);
     } catch (error) {
       console.log("Error while verifying OTP", error);
       showError(
-        response.data.error || "Error while verifying OTP. Please try again."
+        error.response.data.error ||
+          "Error while verifying OTP. Please try again."
       );
       setLoading(false);
     }
@@ -49,21 +47,16 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
 
   const sendotp = async (e) => {
     e.preventDefault();
-    if (!mobileno || mobileno.length < 8) {
-      alert("Enter a valid mobile number");
-      return;
-    }
     if (!email) {
       alert("Enter a valid Email");
       return;
     }
     try {
       setLoading(true);
-      const response = await axios.post(
+      var response = await axios.post(
         "https://chat-in-uanp.onrender.com/api/users/sendotp",
         {
           email,
-          mobileno,
         }
       );
       setIsOtpSent(true);
@@ -72,7 +65,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
     } catch (error) {
       console.log("Error while sending OTP", error);
       showError(
-        response.data.error ||
+        error.response.data.error ||
           "Error while sending OTP. Please check if the email is valid."
       );
       setLoading(false);
@@ -108,18 +101,6 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
                 ? "bg-gray-700 text-white border border-gray-500"
                 : "bg-white text-black border border-gray-300"
             } focus:ring-blue-400 mb-2`}
-          />
-          <input
-            type="tel"
-            placeholder="Enter Mobile Number"
-            value={mobileno}
-            onChange={(e) => setLocalMobileno(e.target.value)}
-            required
-            className={`w-full p-3 sm:p-4 rounded-lg shadow-inner focus:ring-4 focus:outline-none transition-all duration-300 ${
-              darkMode
-                ? "bg-gray-700 text-white border border-gray-500"
-                : "bg-white text-black border border-gray-300"
-            } focus:ring-blue-400`}
           />
         </div>
 

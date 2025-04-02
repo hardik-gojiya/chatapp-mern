@@ -10,7 +10,7 @@ function EditProfile({ darkMode }) {
   const navigate = useNavigate();
   const {
     userId,
-    mobileno,
+    email,
     name: initialName,
     profilepic: initialProfilePic,
     createdAt,
@@ -43,7 +43,7 @@ function EditProfile({ darkMode }) {
     e.preventDefault();
     const formData = new FormData();
     formData.append("name", name);
-    formData.append("mobileno", String(mobileno));
+    formData.append("email", String(email));
     if (profilePic) {
       formData.append("profilepic", profilePic);
     }
