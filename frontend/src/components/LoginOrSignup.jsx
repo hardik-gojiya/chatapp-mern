@@ -63,12 +63,13 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
       alert(response.data.message);
       setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.log("Error while sending OTP", error);
       showError(
         error.response.data.error ||
           "Error while sending OTP. Please check if the email is valid."
       );
-      setLoading(false);
+      
     }
   };
 
