@@ -14,11 +14,14 @@ export const SocketProvider = ({ children }) => {
   const { userId } = useLogin();
 
   useEffect(() => {
-    const newSocket = io("https://chat-in-uanp.onrender.com", {
-      withCredentials: true,
-      transports: ["websocket", "polling"],
-      query: { userId: userId },
-    });
+    const newSocket = io(
+      ["https://chat-in-uanp.onrender.com", "http://localhost:5000"],
+      {
+        withCredentials: true,
+        transports: ["websocket", "polling"],
+        query: { userId: userId },
+      }
+    );
     setSocket(newSocket);
 
     newSocket.on("onlineUsers", (users) => {

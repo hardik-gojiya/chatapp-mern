@@ -392,7 +392,7 @@ function OneChat({ darkMode }) {
           <FontAwesomeIcon icon={faPaperPlane} />
         </button>
         {selectedFile && (
-          <div className="absolute left-96 bottom-20 flex items-center space-x-3 p-2 border rounded-lg bg-gray-100 shadow-sm">
+          <div className="absolute left-1/2 bottom-20 flex items-center space-x-3 p-2 border rounded-lg bg-gray-100 shadow-sm">
             {/\.(jpeg|jpg|png|gif)$/i.test(selectedFile.name) ? (
               <img
                 src={URL.createObjectURL(selectedFile)}

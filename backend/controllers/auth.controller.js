@@ -23,10 +23,7 @@ const generateOtp = () => {
 };
 
 const generateToken = (user) => {
-  return jwt.sign(
-    { id: user._id, mobileno: user.mobileno },
-    process.env.JWT_SECRET
-  );
+  return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET);
 };
 
 const sendOtp = async (req, res) => {
@@ -89,19 +86,23 @@ const verifyOtp = async (req, res) => {
   });
 
   try {
-    if (user && user.otp === String(otp)) {
-      user.isVerified = true;
-      user.otp = undefined;
-      await user.save();
-      const token = generateToken(user);
+    if (user) {
+      if (user.otp === String(otp)) {
+        user.isVerified = true;
+        user.otp = undefined;
+        await user.save();
+        const token = generateToken(user);
 
-      res.cookie("token", token, {
-        httpOnltly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 5 * 24 * 60 * 60 * 1000,
-      });
-      return res.status(200).json({ message: "OTP varifying succesfully" });
+        res.cookie("token", token, {
+          httpOnltly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 5 * 24 * 60 * 60 * 1000,
+        });
+        return res.status(200).json({ message: "OTP varifying succesfully" });
+      } else {
+        return res.status(400).json({ message: "Enter valid otp" });
+      }
     }
     return res.status(200).json({ error: "error while verifying otp" });
   } catch (error) {
@@ -252,7 +253,7 @@ const checkAuth = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const { name, email, mobileno } = req.body;
+    const { name, email } = req.body;
     const profilepic = req.file?.path;
 
     const user = await User.findOne({ email: String(email) });
@@ -263,9 +264,6 @@ const updateUserProfile = async (req, res) => {
 
     if (name) {
       user.name = name;
-    }
-    if (mobileno) {
-      user.mobileno = mobileno;
     }
 
     if (profilepic) {

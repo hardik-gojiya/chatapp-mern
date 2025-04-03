@@ -26,7 +26,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
       const users = response.data || [];
       const formattedChats = users.map((user) => ({
         paraid: user._id.toString(),
-        id: user.mobileno,
+        id: user.email,
         name: user.name,
         avatar: user.profilepic,
         lastMessage: "",
@@ -50,7 +50,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
         (chat.name || String(chat.id))
           .toLowerCase()
           .includes(search.toLowerCase()) ||
-        (chat.mobileno || String(chat.id))
+        (chat.email || String(chat.id))
           .toLowerCase()
           .includes(search.toLowerCase())
     )
@@ -89,7 +89,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
           </div>
 
           <div
-            className={`flex flex-col space-y-2 overflow-y-auto h-[calc(100vh-140px)] custom-scrollbar ${
+            className={`flex flex-col space-y-2  overflow-y-auto h-[calc(100vh-140px)] custom-scrollbar ${
               darkMode ? "scrollbar-dark" : "scrollbar-light"
             }`}
           >
@@ -122,7 +122,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
                       />
                     )}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 overflow-hidden">
                     <h3 className="text-base font-semibold truncate">
                       {chat.name || chat.id}
                     </h3>

@@ -69,7 +69,6 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
         error.response.data.error ||
           "Error while sending OTP. Please check if the email is valid."
       );
-      
     }
   };
 
