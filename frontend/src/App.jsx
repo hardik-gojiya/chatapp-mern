@@ -95,17 +95,17 @@ function App() {
           )}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <div className="absolute left-2 bottom-2 text-sm text-gray-200 hover:text-gray-700">
-          Made By{" "}
-          <a
-            className="underline hover:text-blue-600 transition-colors duration-200"
-            href="https://hardik-gojiya-portfolio.netlify.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Hardik Gojiya
-          </a>
-        </div>
+      </div>
+      <div className="text-[10px] text-gray-400 text-center px-1 sm:px-2">
+        Made by{" "}
+        <a
+          className="underline hover:text-blue-400 transition-colors duration-200"
+          href="https://hardik-gojiya-portfolio.netlify.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Hardik Gojiya
+        </a>
       </div>
     </div>
   );

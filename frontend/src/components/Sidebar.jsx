@@ -23,11 +23,12 @@ function Sidebar({
   return (
     <>
       <h2
-        className={`absolute top-5 z-50 left-5 text-xl sm:text-2xl font-bold cursor-pointer ${darkMode? "text-white" : "text-blue-500"}`}
+        className={`absolute top-5 z-50 left-5 text-xl sm:text-2xl font-bold cursor-pointer ${
+          darkMode ? "text-white" : "text-blue-500"
+        }`}
         onClick={() => {
           setIsOpenAllChat(!isOpenAllChat);
         }}
-        
       >
         {isOpenAllChat ? (
           <FontAwesomeIcon icon={faXmark} />
@@ -92,6 +93,7 @@ function Sidebar({
           )}
         </div>
       )}
+      
     </>
   );
 }
