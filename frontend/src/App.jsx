@@ -96,7 +96,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
-      <div className="text-[10px] text-gray-400 text-center px-1 sm:px-2">
+      <div className="text-[10px] absolute top-1 right-1 text-gray-400 text-center px-1 sm:px-2">
         Made by{" "}
         <a
           className="underline hover:text-blue-400 transition-colors duration-200"
