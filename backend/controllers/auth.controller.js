@@ -240,6 +240,7 @@ const checkAuth = async (req, res) => {
       isLoggedIn: true,
       userId: user._id,
       email: user.email,
+      mobileno: user.mobileno,
       name: user.name || "",
       profilepic: user.profilepic,
       createdAt: user.createdAt,
@@ -253,7 +254,7 @@ const checkAuth = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, mobileno } = req.body;
     const profilepic = req.file?.path;
 
     const user = await User.findOne({ email: String(email) });
@@ -264,6 +265,9 @@ const updateUserProfile = async (req, res) => {
 
     if (name) {
       user.name = name;
+    }
+    if (mobileno) {
+      user.mobileno = mobileno;
     }
 
     if (profilepic) {
@@ -292,8 +296,9 @@ const fetchUser = async (req, res) => {
     if (user) {
       const name = user.name;
       const email = user.email;
+      const mobileno = user.mobileno;
       const profilepic = user.profilepic;
-      return res.status(200).json({ name, email, profilepic });
+      return res.status(200).json({ name, email,mobileno, profilepic });
     }
   } catch (error) {
     console.log("error while fetching user", error);
