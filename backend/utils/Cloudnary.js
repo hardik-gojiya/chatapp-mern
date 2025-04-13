@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import dotenv from "dotenv"
-dotenv.config()
+import dotenv from "dotenv";
+dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -20,7 +20,7 @@ const uploadOnClodinary = async (localFilePath) => {
       folder: "chat-app/profile-pics",
     });
 
-    fs.unlinkSync(localFilePath); 
+    fs.unlinkSync(localFilePath);
 
     return response;
   } catch (error) {
@@ -30,4 +30,13 @@ const uploadOnClodinary = async (localFilePath) => {
   }
 };
 
-export { uploadOnClodinary };
+const deleteFromCloudinary = async (cloudinarypath) => {
+  const part = cloudinarypath.split("/");
+  const folder = part[part.length - 2];
+  const file = part[part.length - 1];
+
+  const deletref = await cloudinary.uploader.destroy(`${folder}/${file}`);
+  return deletref;
+};
+
+export { uploadOnClodinary, deleteFromCloudinary };

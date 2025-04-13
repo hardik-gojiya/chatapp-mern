@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.model.js";
 import dotenv from "dotenv";
-import { uploadOnClodinary } from "../utils/Cloudnary.js";
+import { deleteFromCloudinary, uploadOnClodinary } from "../utils/Cloudnary.js";
 
 dotenv.config();
 
@@ -271,10 +271,12 @@ const updateUserProfile = async (req, res) => {
     }
 
     if (profilepic) {
+      const oldimage = user.profilepic;
       const cloudinarypic = await uploadOnClodinary(profilepic);
 
       if (cloudinarypic && cloudinarypic.url) {
         user.profilepic = cloudinarypic.url;
+        await deleteFromCloudinary(oldimage);
       } else {
         console.log("Error uploading to Cloudinary");
         return res.status(500).json({ message: "Error uploading image" });
@@ -298,7 +300,7 @@ const fetchUser = async (req, res) => {
       const email = user.email;
       const mobileno = user.mobileno;
       const profilepic = user.profilepic;
-      return res.status(200).json({ name, email,mobileno, profilepic });
+      return res.status(200).json({ name, email, mobileno, profilepic });
     }
   } catch (error) {
     console.log("error while fetching user", error);
