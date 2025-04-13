@@ -9,7 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnClodinary = async (localFilePath) => {
+const uploadOnClodinary = async (forwhat, localFilePath) => {
   try {
     if (!localFilePath) {
       console.log("No file path provided");
@@ -17,7 +17,8 @@ const uploadOnClodinary = async (localFilePath) => {
     }
 
     const response = await cloudinary.uploader.upload(localFilePath, {
-      folder: "chat-app/profile-pics",
+      folder: `chat-app/${forwhat}`,
+      resource_type: "auto",
     });
 
     fs.unlinkSync(localFilePath);
@@ -31,12 +32,24 @@ const uploadOnClodinary = async (localFilePath) => {
 };
 
 const deleteFromCloudinary = async (cloudinarypath) => {
-  const part = cloudinarypath.split("/");
-  const folder = part[part.length - 2];
-  const file = part[part.length - 1];
+  try {
+    const part = cloudinarypath.split("/");
+    const folder = part[part.length - 2];
+    const file = part[part.length - 1].split(".")[0];
 
-  const deletref = await cloudinary.uploader.destroy(`${folder}/${file}`);
-  return deletref;
+    const deletref = await cloudinary.uploader.destroy(
+      `chat-app/${folder}/${file}`
+    );
+    if (deletref.result !== "ok") {
+      console.log("Cloudinary Delete Error: ", deletref.result);
+      return null;
+    }
+
+    return deletref;
+  } catch (error) {
+    console.error("Cloudinary Delete Error: ", error);
+    return null;
+  }
 };
 
 export { uploadOnClodinary, deleteFromCloudinary };

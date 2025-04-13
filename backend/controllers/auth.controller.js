@@ -101,7 +101,7 @@ const verifyOtp = async (req, res) => {
         });
         return res.status(200).json({ message: "OTP varifying succesfully" });
       } else {
-        return res.status(400).json({ message: "Enter valid otp" });
+        return res.status(400).json({ error: "Enter valid otp" });
       }
     }
     return res.status(200).json({ error: "error while verifying otp" });
@@ -272,11 +272,13 @@ const updateUserProfile = async (req, res) => {
 
     if (profilepic) {
       const oldimage = user.profilepic;
-      const cloudinarypic = await uploadOnClodinary(profilepic);
+      const cloudinarypic = await uploadOnClodinary("profile-pics", profilepic);
 
       if (cloudinarypic && cloudinarypic.url) {
         user.profilepic = cloudinarypic.url;
-        await deleteFromCloudinary(oldimage);
+        if (oldimage) {
+          await deleteFromCloudinary(oldimage);
+        }
       } else {
         console.log("Error uploading to Cloudinary");
         return res.status(500).json({ message: "Error uploading image" });

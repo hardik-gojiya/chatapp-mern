@@ -50,7 +50,7 @@ function EditProfile({ darkMode }) {
     try {
       setLoading(true);
       const response = await axios.post(
-        `https://chat-in-uanp.onrender.com/api/users/editprofile`,
+        `${import.meta.env.VITE_API_URL}/api/users/editprofile`,
         formData,
         {
           headers: {
@@ -78,7 +78,7 @@ function EditProfile({ darkMode }) {
       }
       setLoading(true);
       const response = await axios.delete(
-        `https://chat-in-uanp.onrender.com/api/users/deleteProfile/${userId}`
+        `${import.meta.env.VITE_API_URL}/api/users/deleteProfile/${userId}`
       );
       if (response.status === 200) {
         showSuccess(response.data.message);

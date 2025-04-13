@@ -22,7 +22,7 @@ export const LoginProvider = ({ children }) => {
   const checkLoggedin = async () => {
     try {
       const response = await axios.get(
-        "https://chat-in-uanp.onrender.com/api/users/check-auth",
+        `${import.meta.env.VITE_API_URL}/api/users/check-auth`,
         { withCredentials: true }
       );
       setUserId(response.data.userId);
@@ -41,7 +41,7 @@ export const LoginProvider = ({ children }) => {
     if (islogedin && window.confirm("Are you sure you want to logout?")) {
       try {
         const response = await axios.post(
-          "https://chat-in-uanp.onrender.com/api/users/logout",
+          `${import.meta.env.VITE_API_URL}/api/users/logout`,
           {},
           {
             withCredentials: true,

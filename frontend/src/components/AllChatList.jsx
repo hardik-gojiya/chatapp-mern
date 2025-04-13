@@ -18,7 +18,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
   const fetchAllChats = async () => {
     try {
       const response = await axios.get(
-        "https://chat-in-uanp.onrender.com/api/message/allusers",
+        `${import.meta.env.VITE_API_URL}/api/message/allusers`,
         {
           withCredentials: true,
         }

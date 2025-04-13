@@ -1,6 +1,6 @@
 import { User } from "../models/User.model.js";
 import { Message } from "../models/Message.model.js";
-import { uploadOnClodinary } from "../utils/Cloudnary.js";
+import { deleteFromCloudinary, uploadOnClodinary } from "../utils/Cloudnary.js";
 
 const getuserfordashboard = async (req, res) => {
   try {
@@ -48,7 +48,7 @@ const sendmessage = async (req, res) => {
     let fileurl = null;
 
     if (selectedFile) {
-      const result = await uploadOnClodinary(selectedFile);
+      const result = await uploadOnClodinary("chat-image", selectedFile);
       fileurl = result.secure_url || result.url;
       if (!fileurl) {
         return res.status(500).json({ error: "Internal server error" });
@@ -86,6 +86,10 @@ const deleteMsg = async (req, res) => {
     }
 
     if (myid.toString() === msg.sender.toString()) {
+      const file = msg.file;
+      if (file) {
+        await deleteFromCloudinary(file);
+      }
       await msg.deleteOne();
       return res.status(200).json({ message: "Message deleted successfully" });
     } else {

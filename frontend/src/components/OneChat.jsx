@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import "../index.css";
 import { Link, useParams } from "react-router-dom";
 import { useToast } from "./context/ToastContext";
-import { useLogin } from "./context/LoginContext";
 import { useSocket } from "./context/SoketContext";
 import axios from "axios";
 import DropDownDelete from "./DropDownDelete";
@@ -50,10 +49,10 @@ function OneChat({ darkMode }) {
   const fetchOneChat = async () => {
     try {
       const response = await axios.get(
-        `https://chat-in-uanp.onrender.com/api/message/chat/${id}`
+        `${import.meta.env.VITE_API_URL}/api/message/chat/${id}`
       );
       const reciverres = await axios.get(
-        `https://chat-in-uanp.onrender.com/api/users/fetchuser/${id}`
+        `${import.meta.env.VITE_API_URL}/api/users/fetchuser/${id}`
       );
       setMessages(response.data);
       setReciverDetails({
@@ -92,7 +91,7 @@ function OneChat({ darkMode }) {
           formData.append("selectedFile", selectedFile);
         }
         const response = await axios.post(
-          `https://chat-in-uanp.onrender.com/api/message/send/${id}`,
+          `${import.meta.env.VITE_API_URL}/api/message/send/${id}`,
           formData,
           {
             headers: {
@@ -141,7 +140,7 @@ function OneChat({ darkMode }) {
     try {
       setLoading(true);
       const response = await axios.delete(
-        `https://chat-in-uanp.onrender.com/api/message/delete/${id}`
+        `${import.meta.env.VITE_API_URL}/api/message/delete/${id}`
       );
       if (response) {
         setMessages((prev) => prev.filter((msg) => msg._id !== id));
@@ -157,7 +156,7 @@ function OneChat({ darkMode }) {
     try {
       setLoading(true);
       const response = await axios.put(
-        `https://chat-in-uanp.onrender.com/api/message/edit/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/message/edit/${id}`,
         { newMsg: newMsg }
       );
       if (response.status === 200) {

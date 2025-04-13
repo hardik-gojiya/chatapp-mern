@@ -24,7 +24,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
     try {
       setLoading(true);
       var response = await axios.post(
-        "https://chat-in-uanp.onrender.com/api/users/verifyOtp",
+        `${import.meta.env.VITE_API_URL}/api/users/verifyOtp`,
         {
           email,
           otp: String(otp),
@@ -54,7 +54,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
     try {
       setLoading(true);
       var response = await axios.post(
-        "https://chat-in-uanp.onrender.com/api/users/sendotp",
+        `${import.meta.env.VITE_API_URL}/api/users/sendotp`,
         {
           email,
         }
