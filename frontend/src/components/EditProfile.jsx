@@ -186,6 +186,12 @@ function EditProfile({ darkMode }) {
             })}
           </span>
         </p>
+        <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 mt-2 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg w-full"
+              >
+                Logout
+              </button>
         <div className="mt-6">
           <button
             onClick={() => setShowDeleteMenu(!showDeleteMenu)}
