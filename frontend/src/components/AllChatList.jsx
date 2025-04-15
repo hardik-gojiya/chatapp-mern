@@ -71,6 +71,15 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
       });
 
   const handlePinToggle = async (chat) => {
+    const updatingId = chat.paraid;
+
+    if (chat.pinned) {
+      setPinChats((prev) => prev.filter((c) => c.paraid !== updatingId));
+      setUnPinChats((prev) => [{ ...chat, pinned: false }, ...prev]);
+    } else {
+      setUnPinChats((prev) => prev.filter((c) => c.paraid !== updatingId));
+      setPinChats((prev) => [{ ...chat, pinned: true }, ...prev]);
+    }
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/users/adduserTopin`,
