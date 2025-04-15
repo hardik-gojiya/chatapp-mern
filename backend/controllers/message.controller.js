@@ -1,14 +1,25 @@
 import { User } from "../models/User.model.js";
 import { Message } from "../models/Message.model.js";
 import { deleteFromCloudinary, uploadOnClodinary } from "../utils/Cloudnary.js";
+import { PinChat } from "../models/PinChat.model.js";
 
 const getuserfordashboard = async (req, res) => {
   try {
     const loggedinUser = req.user._id;
-    const filterduser = await User.find({ _id: { $ne: loggedinUser } }).select(
+    const fethcPinChatModel = await PinChat.findOne({ user: loggedinUser });
+
+    const pinUsers = fethcPinChatModel ? fethcPinChatModel.pinUsers : [];
+
+    const allChat = await User.find({ _id: { $ne: loggedinUser } }).select(
       "-otp"
     );
-    return res.status(200).json(filterduser);
+    let pinChats = allChat.filter((chat) => {
+      return pinUsers.includes(chat._id.toString());
+    });
+    const unpinchat = allChat.filter((chat) => {
+      return !pinUsers.includes(chat._id.toString());
+    });
+    return res.status(200).json({ pinChats, unpinchat });
   } catch (error) {
     console.log("error in getuserfordashboard ", error);
     return res.status(500).json({ error: "internal server error" });

@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import { User } from "./User.model.js";
 
 const pinchatSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: User },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     pinUsers: [
       {
-        pin: { type: mongoose.Schema.Types.ObjectId, ref: User },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
   },

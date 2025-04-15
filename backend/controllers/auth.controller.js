@@ -5,6 +5,7 @@ import { User } from "../models/User.model.js";
 import dotenv from "dotenv";
 import { deleteFromCloudinary, uploadOnClodinary } from "../utils/Cloudnary.js";
 import { PinChat } from "../models/PinChat.model.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -342,46 +343,45 @@ const addpinUser = async (req, res) => {
   if (!userTopinid) {
     return res.status(400).json({ error: "userid is require" });
   }
+  if (!mongoose.Types.ObjectId.isValid(userTopinid)) {
+    return res.status(400).json({ error: "Invalid user ID format" });
+  }
+
   const loginuser = req.user;
+
   try {
-    let userToPin = await User.findById(userTopinid);
+    let userToPin = await User.findById(userTopinid).select("-otp");
 
     if (!userToPin) {
       return res.status(404).json({ error: "user not found" });
     }
 
-    let user = await User.findById(loginuser);
+    let user = await User.findById(loginuser).select("-otp");
     let pinchat = await PinChat.findOne({ user: user });
 
     if (!pinchat) {
       pinchat = new PinChat({
         user: user,
-        pinUsers: [{ pin: userToPin._id }],
+        pinUsers: [userToPin],
       });
 
       await pinchat.save();
       return res.status(201).json({ message: "user added to pin", pinchat });
-    }
-
-    const existingIndex = pinchat.pinUsers.findIndex((i) => {
-      const pinnedId =
-        typeof i.pin === "object" ? i.pin._id?.toString() : i.pin?.toString();
-      return pinnedId === userToPin._id.toString();
-    });
-
-    if (existingIndex !== -1) {
-      pinchat.pinUsers.splice(existingIndex, 1);
-      await pinchat.save();
-      return res
-        .status(200)
-        .json({ message: "User removed from pin", pinchat });
     } else {
-      pinchat.pinUsers.push({ pin: userToPin._id });
-      await pinchat.save();
-      return res.status(201).json({ message: "User added to pin", pinchat });
+      const findIndex = pinchat.pinUsers.findIndex((id) => {
+        return id.toString() === userToPin._id.toString();
+      });
+
+      if (findIndex !== -1) {
+        pinchat.pinUsers.splice(findIndex, 1);
+      } else {
+        pinchat.pinUsers.push(userTopinid);
+      }
     }
+    await pinchat.save();
+    return res.json({ message: "user pin list updated", pinchat });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({ error: "internal server error" });
   }
 };
