@@ -146,7 +146,7 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
           }`}
         >
           {isOtpSent
-            ? "Didn't receive OTP? Resend after 30s"
+            ? "Didn't receive OTP? (check if otp arrive in spam mail) or  Resend after 30s"
             : "Enter your Email to receive OTP"}
         </p>
       </div>
