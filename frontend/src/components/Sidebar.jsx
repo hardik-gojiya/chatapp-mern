@@ -49,6 +49,9 @@ function Sidebar({
           {/* Home Button */}
           <Link
             to="/"
+            onClick={() => {
+              setIsOpenAllChat(false);
+            }}
             className="text-lg sm:text-2xl w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-blue-500 transition"
           >
             <FontAwesomeIcon icon={faHouse} />
@@ -66,6 +69,9 @@ function Sidebar({
           ) : (
             <Link
               to="/login"
+              onClick={() => {
+                setIsOpenAllChat(false);
+              }}
               title="Login"
               className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-blue-500 rounded-lg hover:bg-blue-600 transition"
             >
@@ -83,7 +89,12 @@ function Sidebar({
 
           {/* Profile Picture */}
           {islogedin && (
-            <Link to={`/editprofile/${userId}`}>
+            <Link
+              to={`/editprofile/${userId}`}
+              onClick={() => {
+                setIsOpenAllChat(false);
+              }}
+            >
               <img
                 src={profilepic || "/default-profile.png"}
                 alt="Profile"
@@ -93,7 +104,6 @@ function Sidebar({
           )}
         </div>
       )}
-      
     </>
   );
 }

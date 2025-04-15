@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useLogin } from "./context/LoginContext";
 import { useToast } from "./context/ToastContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,6 +8,7 @@ import { faCircle, faThumbtack } from "@fortawesome/free-solid-svg-icons";
 import { useSocket } from "./context/SoketContext";
 
 function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
+  const navigate = useNavigate();
   const { islogedin } = useLogin();
   const [search, setSearch] = useState("");
   const [pinchats, setPinChats] = useState([]);
@@ -88,7 +89,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
       );
 
       showSuccess(chat.pinned ? "Chat unpinned" : "Chat pinned");
-      fetchAllChats(); // Refetch to update list
+      fetchAllChats();
     } catch (err) {
       console.error("Error toggling pin:", err);
       showError("Failed to toggle pin/unpin");
@@ -110,6 +111,9 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
     >
       <Link
         to={`/chat/${chat.paraid}`}
+        onClick={() => {
+          setIsOpenAllChat(false);
+        }}
         className="flex items-center space-x-4 flex-1"
       >
         <div className="relative w-12 h-12">

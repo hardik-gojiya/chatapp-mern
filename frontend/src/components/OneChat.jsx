@@ -106,7 +106,7 @@ function OneChat({ darkMode }) {
             recipient: id,
             createdAt: new Date(),
           });
-          showSuccess("message sent successfully");
+
           setLoading(false);
         }
         setSentMsg("");

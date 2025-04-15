@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -69,6 +69,7 @@ function App() {
           darkMode={darkMode}
           toggleDarkMode={toggleDarkMode}
           isOpenAllChat={isOpenAllChat}
+          setIsOpenAllChat={setIsOpenAllChat}
         />
       )}
 
