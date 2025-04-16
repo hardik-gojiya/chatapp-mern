@@ -50,7 +50,9 @@ function Sidebar({
           <Link
             to="/"
             onClick={() => {
-              setIsOpenAllChat(false);
+              if (window.innerWidth <= 700) {
+                setIsOpenAllChat(false);
+              }
             }}
             className="text-lg sm:text-2xl w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-blue-500 transition"
           >
@@ -70,7 +72,9 @@ function Sidebar({
             <Link
               to="/login"
               onClick={() => {
-                setIsOpenAllChat(false);
+                if (window.innerWidth <= 700) {
+                  setIsOpenAllChat(false);
+                }
               }}
               title="Login"
               className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-blue-500 rounded-lg hover:bg-blue-600 transition"
@@ -92,7 +96,9 @@ function Sidebar({
             <Link
               to={`/editprofile/${userId}`}
               onClick={() => {
-                setIsOpenAllChat(false);
+                if (window.innerWidth <= 700) {
+                  setIsOpenAllChat(false);
+                }
               }}
             >
               <img

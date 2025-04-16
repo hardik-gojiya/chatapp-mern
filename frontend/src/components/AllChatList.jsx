@@ -112,7 +112,9 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
       <Link
         to={`/chat/${chat.paraid}`}
         onClick={() => {
-          setIsOpenAllChat(false);
+          if (window.innerWidth <= 700) {
+            setIsOpenAllChat(false);
+          }
         }}
         className="flex items-center space-x-4 flex-1"
       >
