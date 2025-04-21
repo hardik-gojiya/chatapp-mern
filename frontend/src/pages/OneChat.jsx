@@ -30,7 +30,6 @@ function OneChat({ darkMode }) {
   const [messages, setMessages] = useState([]);
   const [sentMsg, setSentMsg] = useState("");
   const fileInputRef = useRef(null);
-  const goAtEndRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const { showError, showSuccess } = useToast();
   const [showImage, setShowImage] = useState(null);
@@ -47,14 +46,6 @@ function OneChat({ darkMode }) {
   });
 
   const { id } = useParams();
-
-  const handleGoAtEnd = () => {
-    goAtEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    handleGoAtEnd();
-  }, [setMessages]);
 
   const fetchOneChat = async () => {
     try {
@@ -261,7 +252,7 @@ function OneChat({ darkMode }) {
             <p className="text-gray-500 text-center mt-5">No messages yet</p>
           )}
         </ScrollToBottom>
-      </div>
+      </div>  
       <div
         className={`${
           darkMode

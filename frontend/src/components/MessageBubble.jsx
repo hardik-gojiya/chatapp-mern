@@ -77,12 +77,12 @@ function MessageBubble({
     });
 
   const bubbleBaseClasses =
-    "px-2 py-1 text-white shadow-md break-words whitespace-pre-wrap max-w-[85vw] sm:max-w-sm md:max-w-md lg:max-w-lg transition-all";
+    "px-2 py-1 text-white shadow-md break-words whitespace-pre-wrap max-w-[70vw] sm:max-w-sm md:max-w-md lg:max-w-lg transition-all";
 
   return (
     <div className="mb-4 w-full">
       {message.recipient === id ? (
-        <div className="flex justify-end items-start gap-0.5 w-full">
+        <div className="flex justify-end items-start gap-0.5">
           <div className="flex flex-col items-end max-w-full">
             {message.file &&
               (isImage(message.file) ? (
@@ -168,7 +168,7 @@ function MessageBubble({
           />
         </div>
       ) : (
-        <div className="flex justify-start items-start gap-0.5 w-full">
+        <div className="flex justify-start max-w-[70vw] items-start gap-0.5">
           <img
             src={reciverDetails.profilepic}
             className="h-7 w-7 rounded-full border-2 border-gray-400 object-cover"
