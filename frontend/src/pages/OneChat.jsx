@@ -97,7 +97,6 @@ function OneChat({ darkMode }) {
     if (file) {
       setReplyfile(file);
     }
-    console.log(chatinputref.current);
     chatinputref.current?.focus();
   };
 
@@ -263,6 +262,24 @@ function OneChat({ darkMode }) {
           )}
         </ScrollToBottom>
       </div>
+      <div
+        className={`${
+          darkMode
+            ? "bg-gray-800 border-blue-400 text-gray-100"
+            : "bg-gray-200 border-blue-600 text-gray-700"
+        }`}
+      >
+        <ReplyBox
+          replymsgid={replymsgid}
+          replymsg={replymsg}
+          replyfile={replyfile}
+          setReplymsg={setReplymsg}
+          setReplyfile={setReplyfile}
+          setReplymsgid={setReplymsgid}
+          setShowImage={setShowImage}
+          darkMode={darkMode}
+        />
+      </div>
 
       <div
         className={`w-full px-3 sm:px-5 py-3 flex items-center gap-3 ${
@@ -270,17 +287,6 @@ function OneChat({ darkMode }) {
         }`}
       >
         <div className="w-full flex flex-col space-y-2">
-          <ReplyBox
-            replymsgid={replymsgid}
-            replymsg={replymsg}
-            replyfile={replyfile}
-            setReplymsg={setReplymsg}
-            setReplyfile={setReplyfile}
-            setReplymsgid={setReplymsgid}
-            setShowImage={setShowImage}
-            darkMode={darkMode}
-          />
-
           <input
             className={`flex-grow py-3 px-4 rounded-xl shadow-md outline-none ${
               darkMode
@@ -312,7 +318,7 @@ function OneChat({ darkMode }) {
               darkMode
                 ? "bg-gray-700 text-white hover:bg-gray-600"
                 : "bg-gray-200 text-black hover:bg-gray-400"
-            } ${replymsgid ? "mt-12" : ""}`}
+            } `}
           >
             <FontAwesomeIcon icon={faPaperclip} />
           </button>
@@ -323,7 +329,7 @@ function OneChat({ darkMode }) {
               darkMode
                 ? "bg-blue-500 text-white hover:bg-blue-600"
                 : "bg-blue-400 text-white hover:bg-blue-500"
-            } ${replymsgid ? "mt-12" : ""}`}
+            } `}
           >
             <FontAwesomeIcon icon={faPaperPlane} />
           </button>

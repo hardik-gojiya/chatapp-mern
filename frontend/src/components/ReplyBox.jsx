@@ -16,42 +16,54 @@ function ReplyBox({
     <div>
       {replymsgid && (replymsg || replyfile) && (
         <div
-          className={`relative w-full mb-2 p-2 rounded-lg flex items-start border-l-4 ${
+          className={`relative ml-5 mr-35 max-h-30 p-3 rounded-lg flex flex-col overflow-hidden items-start border-l-4 ${
             darkMode
               ? "bg-gray-700 border-blue-400 text-gray-100"
-              : "bg-gray-200 border-blue-600 text-gray-800"
+              : "bg-gray-200 border-blue-600 text-gray-700"
           }`}
         >
-          <div className="flex flex-col flex-grow">
+          <div className="flex flex-col w-full">
             <span className="text-sm font-semibold text-blue-500 mb-1">
               Replying to
             </span>
-            <div className="text-sm break-words max-w-xs">
-              {/* Conditionally render if it's a file or text */}
+
+            <div className="text-sm break-words w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
               {replyfile ? (
-                /\.(jpeg|jpg|png|gif)$/i.test(replyfile) ? (
-                  <div className="flex justify-between items-center gap-2">
-                    <FontAwesomeIcon icon={faPaperclip} />{" "}
+                /\.(jpeg|jpg|png|gif|webp)$/i.test(replyfile) ? (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <FontAwesomeIcon icon={faPaperclip} />
                     <img
-                      className="h-15 w-30"
+                      className="h-16 w-24 object-cover rounded cursor-pointer hover:scale-105 transition"
                       src={replyfile}
-                      alt=""
+                      alt="reply"
                       onClick={() => setShowImage(replyfile)}
                     />
-                    <span className="truncate">{replymsg}</span>
+                    {replymsg && (
+                      <span className="truncate max-w-full">{replymsg}</span>
+                    )}
                   </div>
                 ) : (
-                  <div className="flex justify-between items-center gap-2">
-                    <FontAwesomeIcon icon={faPaperclip} />{" "}
-                    <a href={replyfile}>{replyfile.split("/").pop()}</a>
-                    <span className="truncate">{replymsg}</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <FontAwesomeIcon icon={faPaperclip} />
+                    <a
+                      href={replyfile}
+                      className="text-blue-500 underline break-all max-w-full"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {replyfile.split("/").pop()}
+                    </a>
+                    {replymsg && (
+                      <span className="truncate max-w-full">{replymsg}</span>
+                    )}
                   </div>
                 )
               ) : (
-                <span>{replymsg}</span>
+                <span className="break-words">{replymsg}</span>
               )}
             </div>
           </div>
+
           <button
             onClick={() => {
               setReplymsgid(null);
