@@ -237,6 +237,7 @@ function OneChat({ darkMode }) {
                 message={message}
                 id={id}
                 setShowImage={setShowImage}
+                newMsg={newMsg}
                 setNewMsg={setNewMsg}
                 handleEditMsg={handleEditMsg}
                 setEditingMsgId={setEditingMsgId}
@@ -252,7 +253,7 @@ function OneChat({ darkMode }) {
             <p className="text-gray-500 text-center mt-5">No messages yet</p>
           )}
         </ScrollToBottom>
-      </div>  
+      </div>
       <div
         className={`${
           darkMode
