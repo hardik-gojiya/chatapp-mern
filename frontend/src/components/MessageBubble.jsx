@@ -31,16 +31,16 @@ function MessageBubble({
           }`}
         />
         <div
-          className={`flex flex-col px-2 py-1 rounded-r-md flex-1 ${
+          className={`flex flex-col flex-wrap px-2 overflow-hidden py-1 rounded-r-md flex-1 ${
             darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-800"
           }`}
         >
-          <span className="text-xs font-semibold text-blue-500">
+          <span className="text-xs font-semibold overflow-hidden text-blue-500">
             {replyTo.sender?.name === loginusername
               ? "You"
               : replyTo.sender?.name}
           </span>
-          <span className="text-xs truncate">
+          <span className="text-xs truncate w-full overflow-hidden">
             {replyTo.message}
             {replyTo.file &&
               (isImage(replyTo.file) ? (
