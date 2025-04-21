@@ -277,7 +277,7 @@ const updateUserProfile = async (req, res) => {
       const cloudinarypic = await uploadOnClodinary("profile-pics", profilepic);
 
       if (cloudinarypic && cloudinarypic.url) {
-        user.profilepic = cloudinarypic.url;
+        user.profilepic = cloudinarypic.secure_url;
         if (oldimage) {
           await deleteFromCloudinary(oldimage);
         }
