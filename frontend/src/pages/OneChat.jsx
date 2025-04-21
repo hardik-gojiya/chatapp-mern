@@ -38,7 +38,7 @@ function OneChat({ darkMode }) {
   const [editingMsgId, setEditingMsgId] = useState(null);
   const [replymsgid, setReplymsgid] = useState(null);
   const [replymsg, setReplymsg] = useState("");
-  const [replyfile, setReplyfile] = useState();
+  const [replyfile, setReplyfile] = useState(null);
 
   const [reciverDetails, setReciverDetails] = useState({
     name: "user",
@@ -174,6 +174,9 @@ function OneChat({ darkMode }) {
         showSuccess("Message deleted successfully.");
       }
       setLoading(false);
+      setReplyfile(null);
+      setReplymsg("");
+      setReplymsgid(null);
     } catch (error) {
       console.log("error while deleting message", error);
       showError(error.response?.data?.error || "Error while deleting message");
