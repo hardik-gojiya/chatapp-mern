@@ -5,17 +5,17 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import LoginOrSignup from "./components/LoginOrSignup";
+import LoginOrSignup from "./pages/LoginOrSignup";
 import Sidebar from "./components/Sidebar";
-import Home from "./components/Home";
-import { useLogin } from "./components/context/LoginContext";
+import Home from "./pages/Home";
+import { useLogin } from "./context/LoginContext";
 import AllChatList from "./components/AllChatList";
-import OneChat from "./components/OneChat";
-import EditProfile from "./components/EditProfile";
+import OneChat from "./pages/OneChat";
+import EditProfile from "./pages/EditProfile";
 
 function App() {
   const { islogedin, mobileno, handleLogout } = useLogin();
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [isOpenAllChat, setIsOpenAllChat] = useState(window.innerWidth >= 700);
 
   useEffect(() => {

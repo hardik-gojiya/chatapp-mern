@@ -1,5 +1,12 @@
 @import "tailwindcss";
 /* Custom Scrollbar */
+button[class^="react-scroll-to-bottom--css"] {
+  @apply text-white h-7 w-7 overflow-hidden   rounded-full shadow-md hover:bg-blue-700 transition-all;
+}
+button[class^="react-scroll-to-bottom--css"]::after {
+  content: "▼";
+  padding: 1px;
+}
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
 }
@@ -33,4 +40,7 @@
 
 button {
   cursor: pointer;
+}
+html {
+  scroll-behavior: smooth;
 }

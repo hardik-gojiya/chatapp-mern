@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useLogin } from "./context/LoginContext";
+import { useLogin } from "../context/LoginContext";
 
 function Home() {
   const { islogedin, handleLogout } = useLogin();
@@ -31,7 +31,6 @@ function Home() {
           ) : (
             <div className="flex flex-col justify-between">
               <p>Select any chat and chat whomever you want</p>
-              
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
+import path from "path";
 dotenv.config();
 
 cloudinary.config({
@@ -15,10 +16,25 @@ const uploadOnClodinary = async (forwhat, localFilePath) => {
       console.log("No file path provided");
       return null;
     }
+    function getResourceType(localFilePath) {
+      const fileExtension = path.extname(localFilePath).toLowerCase();
+
+      // Check for image file types
+      const imageExtensions = [
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".bmp",
+        ".webp",
+      ];
+
+      return imageExtensions.includes(fileExtension) ? "image" : "raw";
+    }
 
     const response = await cloudinary.uploader.upload(localFilePath, {
       folder: `chat-app/${forwhat}`,
-      resource_type: "auto",
+      resource_type: getResourceType(localFilePath),
     });
 
     fs.unlinkSync(localFilePath);

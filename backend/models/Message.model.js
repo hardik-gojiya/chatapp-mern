@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {User} from "./User.model.js";
+import { User } from "./User.model.js";
 
 const messageSchema = new mongoose.Schema(
   {
@@ -12,6 +12,11 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: User,
       required: true,
+    },
+    replyTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+      default: null,
     },
     message: {
       type: String,

@@ -3,9 +3,9 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
-import { LoginProvider } from "./components/context/LoginContext.jsx";
-import { ToastProvider } from "./components/context/ToastContext.jsx";
-import { SocketProvider } from "./components/context/SoketContext.jsx";
+import { LoginProvider } from "./context/LoginContext.jsx";
+import { ToastProvider } from "./context/ToastContext.jsx";
+import { SocketProvider } from "./context/SoketContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

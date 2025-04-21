@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useLogin } from "./context/LoginContext";
-import { useToast } from "./context/ToastContext";
+import { useLogin } from "../context/LoginContext";
+import { useToast } from "../context/ToastContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faThumbtack } from "@fortawesome/free-solid-svg-icons";
-import { useSocket } from "./context/SoketContext";
+import { useSocket } from "../context/SoketContext";
+import Loading from "./Loading";
 
 function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
   const navigate = useNavigate();
   const { islogedin } = useLogin();
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [pinchats, setPinChats] = useState([]);
   const [unpinchats, setUnPinChats] = useState([]);
@@ -74,14 +76,8 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
   const handlePinToggle = async (chat) => {
     const updatingId = chat.paraid;
 
-    if (chat.pinned) {
-      setPinChats((prev) => prev.filter((c) => c.paraid !== updatingId));
-      setUnPinChats((prev) => [{ ...chat, pinned: false }, ...prev]);
-    } else {
-      setUnPinChats((prev) => prev.filter((c) => c.paraid !== updatingId));
-      setPinChats((prev) => [{ ...chat, pinned: true }, ...prev]);
-    }
     try {
+      setLoading(true);
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/users/adduserTopin`,
         { userTopinid: chat.paraid },
@@ -93,6 +89,8 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
     } catch (err) {
       console.error("Error toggling pin:", err);
       showError("Failed to toggle pin/unpin");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -121,7 +119,6 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
         <div className="relative w-12 h-12">
           <img
             src={chat.avatar}
-            alt={chat.name}
             className="w-12 h-12 rounded-full border-2 border-blue-400 shadow-md"
           />
           {onlineUsers.includes(String(chat.paraid)) && (
@@ -222,6 +219,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
           </div>
         </div>
       )}
+      {loading && <Loading />}
     </>
   );
 }

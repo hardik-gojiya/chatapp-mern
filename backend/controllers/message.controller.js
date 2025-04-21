@@ -2,6 +2,7 @@ import { User } from "../models/User.model.js";
 import { Message } from "../models/Message.model.js";
 import { deleteFromCloudinary, uploadOnClodinary } from "../utils/Cloudnary.js";
 import { PinChat } from "../models/PinChat.model.js";
+import mongoose from "mongoose";
 
 const getuserfordashboard = async (req, res) => {
   try {
@@ -36,6 +37,12 @@ const getmessages = async (req, res) => {
         { sender: myid, recipient: uertochatid },
         { sender: uertochatid, recipient: myid },
       ],
+    }).populate({
+      path: "replyTo",
+      populate: {
+        path: "sender",
+        select: "-otp",
+      },
     });
 
     res.status(200).json(messages);
@@ -48,6 +55,9 @@ const getmessages = async (req, res) => {
 const sendmessage = async (req, res) => {
   try {
     const sentMsg = req.body.sentMsg;
+    const replyTo = req.body.replyTo
+      ? new mongoose.Types.ObjectId(req.body.replyTo)
+      : null;
     const selectedFile = req.file ? req.file.path : null;
     const { id: recieverid } = req.params;
     const senderid = req.user._id;
@@ -70,6 +80,7 @@ const sendmessage = async (req, res) => {
       sender: senderid,
       recipient: recieverid,
       message: sentMsg || "",
+      replyTo: replyTo,
       file: fileurl || null,
     });
 

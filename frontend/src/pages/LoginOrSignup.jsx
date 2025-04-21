@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 import { useNavigate } from "react-router-dom";
-import { useLogin } from "./context/LoginContext";
-import { useToast } from "./context/ToastContext";
+import { useLogin } from "../context/LoginContext";
+import { useToast } from "../context/ToastContext";
 
 function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();
