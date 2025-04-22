@@ -199,7 +199,7 @@ function OneChat({ darkMode }) {
     >
       {/* chat top bar */}
       <div
-        className={`w-full px-20 py-3 flex items-center gap-3 shadow-md custom-scrollbar ${
+        className={`sticky top-0 w-full px-20 py-3 flex items-center gap-3 shadow-md custom-scrollbar ${
           darkMode ? "bg-gray-900" : "bg-gray-300"
         }`}
       >

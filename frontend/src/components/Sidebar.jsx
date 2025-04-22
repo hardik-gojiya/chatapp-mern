@@ -39,13 +39,12 @@ function Sidebar({
       {isOpenAllChat && (
         <div
           className={`h-screen  w-14 sm:w-16 bg-gray-900 text-white flex flex-col items-center pt-18 sm:pt-18 sm:p-4 space-y-4 sm:space-y-6 shadow-lg ${
-            isOpenAllChat && window.innerWidth < 700
+            isOpenAllChat && window.innerWidth < 800
               ? "absolute left-0 inset-0 z-10 "
               : "block"
           }`}
         >
-          {/* Toggle Chat Sidebar */}
-
+          
           {/* Home Button */}
           <Link
             to="/"

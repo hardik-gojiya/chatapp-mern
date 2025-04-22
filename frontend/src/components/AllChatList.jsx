@@ -168,8 +168,8 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
               ? "bg-gray-900 text-white border-blue-800"
               : "bg-white text-gray-900 border-blue-400"
           } shadow-xl ${
-            isOpenAllChat && window.innerWidth < 700
-              ? "absolute left-18 inset-0 z-10"
+            isOpenAllChat && window.innerWidth < 800
+              ? "absolute left-13 inset-0 z-10"
               : "block"
           }`}
         >

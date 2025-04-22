@@ -141,7 +141,7 @@ function MessageBubble({
                   </div>
                 ) : (
                   <div
-                    className={`${bubbleBaseClasses} bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-xl rounded-tl-xl rounded-tr-xl cursor-pointer hover:scale-105`}
+                    className={`${bubbleBaseClasses} border-r-4 border-green-500 bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-xl rounded-tl-xl rounded-tr-xl cursor-pointer hover:scale-105`}
                   >
                     {renderReplyBlock(message.replyTo)}
                     {message.message}
@@ -181,7 +181,7 @@ function MessageBubble({
               handleReplyMsg(message._id, message.message, message.file);
             }}
           />
-          <div className="flex flex-col items-start max-w-full">
+          <div className="flex  flex-col items-start max-w-full">
             {message.file &&
               (isImage(message.file) ? (
                 <img
@@ -203,7 +203,7 @@ function MessageBubble({
 
             {message.message.length > 0 && (
               <div
-                className={`${bubbleBaseClasses} bg-gradient-to-br from-green-500 to-green-700 rounded-tr-xl rounded-br-xl rounded-tl-xl`}
+                className={`${bubbleBaseClasses} border-l-4 border-blue-500 bg-gradient-to-br from-green-500 to-green-700 rounded-tr-xl rounded-br-xl rounded-tl-xl`}
               >
                 {renderReplyBlock(message.replyTo)}
                 {message.message}

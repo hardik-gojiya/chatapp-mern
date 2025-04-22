@@ -16,7 +16,7 @@ import EditProfile from "./pages/EditProfile";
 function App() {
   const { islogedin, mobileno, handleLogout } = useLogin();
   const [darkMode, setDarkMode] = useState(true);
-  const [isOpenAllChat, setIsOpenAllChat] = useState(window.innerWidth >= 700);
+  const [isOpenAllChat, setIsOpenAllChat] = useState(window.innerWidth >= 800);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("darkMode");
@@ -26,7 +26,7 @@ function App() {
     }
 
     const handleWindResize = () => {
-      if (window.innerWidth < 700) {
+      if (window.innerWidth < 800) {
         setIsOpenAllChat(false);
       } else {
         setIsOpenAllChat(true);
