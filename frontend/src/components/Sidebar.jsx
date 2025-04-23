@@ -23,7 +23,7 @@ function Sidebar({
   return (
     <>
       <h2
-        className={`absolute top-5 z-50 left-5 text-xl sm:text-2xl font-bold cursor-pointer ${
+        className={`absolute top-5 z-501 left-5 text-xl sm:text-2xl font-bold cursor-pointer ${
           darkMode ? "text-white" : "text-blue-500"
         }`}
         onClick={() => {
@@ -44,7 +44,6 @@ function Sidebar({
               : "block"
           }`}
         >
-          
           {/* Home Button */}
           <Link
             to="/"
