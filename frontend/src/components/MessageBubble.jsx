@@ -2,6 +2,7 @@ import React from "react";
 import DropDownDelete from "./DropDownDelete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 function MessageBubble({
   message,
@@ -104,8 +105,6 @@ function MessageBubble({
               ) : (
                 <a
                   href={message.file}
-                  target="_blank"
-                  rel="noreferrer"
                   className={`${bubbleBaseClasses} bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-xl rounded-tl-xl rounded-tr-xl`}
                 >
                   📄 {message.file.split("/").pop()}
@@ -191,14 +190,12 @@ function MessageBubble({
                   alt="image"
                 />
               ) : (
-                <a
-                  href={message.file}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`${bubbleBaseClasses} bg-gradient-to-br from-green-500 to-green-700 rounded-tr-xl rounded-br-xl rounded-tl-xl`}
+                <button
+                  onClick={() => handleDownloadFile(message.file)}
+                  className={`${bubbleBaseClasses} bg-gradient-to-br from-blue-500 to-blue-700 rounded-bl-xl rounded-tl-xl rounded-tr-xl`}
                 >
                   📄 {message.file.split("/").pop()}
-                </a>
+                </button>
               ))}
 
             {message.message.length > 0 && (

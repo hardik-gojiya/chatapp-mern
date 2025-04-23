@@ -37,7 +37,7 @@ function ShowImage({ showImage, setShowImage }) {
             <img
               src={showImage}
               alt="Preview"
-              className="max-w-[90vw] max-h-[80vh] sm:max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] object-contain rounded-lg shadow-xl"
+              className="max-w-[90vw] max-h-[80vh] sm:max-w-[80vw] md:max-w-[90vw] lg:max-w-[90vw] object-contain rounded-lg shadow-xl"
             />
 
             <button
@@ -48,7 +48,7 @@ function ShowImage({ showImage, setShowImage }) {
             </button>
             <button
               onClick={handleDownloadImage}
-              className="fixed top-10 right-2 mt-4 sm:top-4 sm:right-4 bg-gray-500  text-white rounded-full h-8 w-8 flex items-center justify-center shadow-md hover:bg-red-600 transition"
+              className="fixed right-2 top-10 mt-4 md:top-10 sm:top-4 sm:right-4 bg-gray-500  text-white rounded-full h-8 w-8 flex items-center justify-center shadow-md hover:bg-red-600 transition"
             >
               <FontAwesomeIcon icon={faArrowDown} />
             </button>

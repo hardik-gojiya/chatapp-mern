@@ -2,6 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
 import path from "path";
+import { console } from "inspector";
 dotenv.config();
 
 cloudinary.config({
@@ -68,4 +69,32 @@ const deleteFromCloudinary = async (cloudinarypath) => {
   }
 };
 
-export { uploadOnClodinary, deleteFromCloudinary };
+const fileDownload = async (req, res) => {
+  try {
+    const { fileUrl: cloudinarypath } = req.body;
+
+    const part = cloudinarypath.split("/");
+    const folder = part[part.length - 2];
+    const file = part[part.length - 1].split(".")[0];
+
+    const ext = path.extname(cloudinarypath).toLowerCase();
+    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
+    const resourceType = imageExtensions.includes(ext) ? "image" : "raw";
+
+    const signedUrl = cloudinary.utils.private_download_url(
+      `chat-app/${folder}/${file}`,
+      {
+        resource_type: resourceType,
+        sign_url: true,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+      }
+    );
+
+    res.json({ signedUrl });
+  } catch (error) {
+    console.error("Cloudinary Download Error: ", error);
+    res.status(500).json({ error: "Failed to generate download URL" });
+  }
+};
+
+export { uploadOnClodinary, deleteFromCloudinary, fileDownload };

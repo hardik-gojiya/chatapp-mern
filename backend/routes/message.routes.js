@@ -9,6 +9,7 @@ import {
 } from "../controllers/message.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { fileDownload } from "../utils/Cloudnary.js";
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.post(
 );
 router.delete("/delete/:id", protectRoute, deleteMsg);
 router.put("/edit/:id", protectRoute, editMsg);
+router.post("/filedownload", protectRoute, fileDownload);
 
 export default router;
