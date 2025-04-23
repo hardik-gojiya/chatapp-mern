@@ -12,6 +12,7 @@ import {
   faPaperclip,
   faXmark,
   faCheck,
+  faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
 import ScrollToBottom from "react-scroll-to-bottom";
 import { useLogin } from "../context/LoginContext";
@@ -222,6 +223,23 @@ function OneChat({ darkMode }) {
         <span className="text-lg font-semibold truncate max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
           {reciverDetails.name || reciverDetails.mobileno}
         </span>
+        <div className="ml-auto relative group">
+          <button
+            className={`p-2 rounded-full ${
+              darkMode ? "hover:bg-gray-700" : "hover:bg-gray-400"
+            } transition`}
+          >
+            <FontAwesomeIcon icon={faEllipsisVertical} />
+          </button>
+          <div className="absolute right-0 mt- w-40 bg-white dark:bg-gray-700 rounded-lg shadow-lg hidden group-hover:block z-50">
+            <button
+              // onClick={handleClearChat}
+              className="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-500 dark:text-white text-red-600 rounded-b"
+            >
+              Clear Chat
+            </button>
+          </div>
+        </div>
       </div>
 
       <div

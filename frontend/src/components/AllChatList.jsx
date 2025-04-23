@@ -163,7 +163,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
     <>
       {isOpenAllChat && (
         <div
-          className={`h-screen w-72 md:w-96 transition-all duration-300 p-4 border-l-2 border-r-2 ${
+          className={`h-screen z-450 w-72 md:w-96 transition-all duration-300 p-4 border-l-2 border-r-2 ${
             darkMode
               ? "bg-gray-900 text-white border-blue-800"
               : "bg-white text-gray-900 border-blue-400"

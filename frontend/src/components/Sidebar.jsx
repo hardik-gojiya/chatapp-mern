@@ -23,7 +23,7 @@ function Sidebar({
   return (
     <>
       <h2
-        className={`absolute top-5 z-500 left-5 text-xl sm:text-2xl font-bold cursor-pointer ${
+        className={`fixed top-5 z-500 left-5 text-xl sm:text-2xl font-bold cursor-pointer ${
           darkMode ? "text-white" : "text-blue-500"
         }`}
         onClick={() => {
