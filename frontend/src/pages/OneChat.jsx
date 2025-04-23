@@ -4,14 +4,11 @@ import { Link, useParams } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { useSocket } from "../context/SoketContext";
 import axios from "axios";
-import DropDownDelete from "../components/DropDownDelete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faPaperPlane,
   faPaperclip,
-  faXmark,
-  faCheck,
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
 import ScrollToBottom from "react-scroll-to-bottom";
@@ -39,6 +36,25 @@ function OneChat({ darkMode }) {
   const [replymsgid, setReplymsgid] = useState(null);
   const [replymsg, setReplymsg] = useState("");
   const [replyfile, setReplyfile] = useState(null);
+
+  const [isOpenTopMenu, setIOpenTopMenu] = useState(false);
+  const handleClearChat = async () => {
+    if (window.confirm("Are you sure you want to clear this chat?")) {
+      alert("this feature is coming soon");
+      try {
+        const response = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/api/message/clear/${id}`
+        );
+        if (response.status === 200) {
+          setMessages([]);
+          showSuccess(response.data.message || "Chat cleared successfully.");
+        }
+        setIOpenTopMenu(false);
+      } catch (error) {
+        showError(error.responnse.data.error || "error while clearing chat");
+      }
+    }
+  };
 
   const [reciverDetails, setReciverDetails] = useState({
     name: "user",
@@ -192,6 +208,15 @@ function OneChat({ darkMode }) {
       showError(response.data.error || "error while editing message");
     }
   };
+
+  useEffect(() => {
+    if (isOpenTopMenu) {
+      document.addEventListener("click", () => setIOpenTopMenu(false));
+    }
+    return () => {
+      document.removeEventListener("click", () => setIOpenTopMenu(false));
+    };
+  }, [isOpenTopMenu]);
   return (
     <div
       className={`w-full h-screen flex flex-col justify-between ${
@@ -200,7 +225,7 @@ function OneChat({ darkMode }) {
     >
       {/* chat top bar */}
       <div
-        className={`sticky top-0 z-400 w-full px-20 py-3 flex items-center gap-3 shadow-md custom-scrollbar ${
+        className={`sticky top-0 z-400 w-full pl-20 pr-5 py-3 flex items-center gap-2 justify-between shadow-md custom-scrollbar ${
           darkMode ? "bg-gray-900" : "bg-gray-300"
         }`}
       >
@@ -223,22 +248,31 @@ function OneChat({ darkMode }) {
         <span className="text-lg font-semibold truncate max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
           {reciverDetails.name || reciverDetails.mobileno}
         </span>
-        <div className="ml-auto relative group">
+        <div className="ml-auto relative">
           <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIOpenTopMenu((prev) => !prev);
+            }}
             className={`p-2 rounded-full ${
               darkMode ? "hover:bg-gray-700" : "hover:bg-gray-400"
             } transition`}
           >
             <FontAwesomeIcon icon={faEllipsisVertical} />
           </button>
-          <div className="absolute right-0 mt- w-40 bg-white dark:bg-gray-700 rounded-lg shadow-lg hidden group-hover:block z-50">
-            <button
-              // onClick={handleClearChat}
-              className="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-500 dark:text-white text-red-600 rounded-b"
+
+          {isOpenTopMenu && (
+            <div
+              className={`absolute right-0 w-40 bg-white dark:bg-gray-700 rounded-lg shadow-lg z-50`}
             >
-              Clear Chat
-            </button>
-          </div>
+              <button
+                onClick={handleClearChat}
+                className="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-500 dark:text-white text-red-600 rounded-b"
+              >
+                Clear Chat
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
