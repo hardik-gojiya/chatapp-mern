@@ -249,7 +249,7 @@ function OneChat({ darkMode }) {
           {reciverDetails.name || reciverDetails.mobileno}
         </span>
         <div className="ml-auto relative">
-          <button
+          {/* <button
             onClick={(e) => {
               e.stopPropagation();
               setIOpenTopMenu((prev) => !prev);
@@ -272,7 +272,7 @@ function OneChat({ darkMode }) {
                 Clear Chat
               </button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
