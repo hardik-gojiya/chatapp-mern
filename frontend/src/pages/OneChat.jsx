@@ -246,7 +246,7 @@ function OneChat({ darkMode }) {
           onClick={() => setShowImage(reciverDetails.profilepic)}
         />
         <span className="text-lg font-semibold truncate max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
-          {reciverDetails.name || reciverDetails.mobileno}
+          {reciverDetails.name || reciverDetails.email}
         </span>
         <div className="ml-auto relative">
           {/* <button
