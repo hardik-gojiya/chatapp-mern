@@ -8,7 +8,7 @@ A real-time chat application built with the MERN stack (MongoDB, Express.js, Rea
 
 ## 🚀 Live Demo
 
-[View the live demo here](https://your-live-app-link.com)  
+[View the live demo here](https://chat-in-uanp.onrender.com/)  
 *(Replace with actual URL after deployment)*
 
 ---
