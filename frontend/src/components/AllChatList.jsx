@@ -114,7 +114,7 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
             setIsOpenAllChat(false);
           }
         }}
-        className="flex items-center space-x-4 flex-1"
+        className="flex items-center space-x-4 flex-1 overflow-hidden"
       >
         <div className="relative w-12 h-12">
           <img
@@ -131,8 +131,8 @@ function AllChatList({ darkMode, isOpenAllChat, setIsOpenAllChat }) {
         </div>
 
         <div className="overflow-hidden">
-          <h3 className="text-base font-semibold truncate">
-            {chat.name || chat.id}
+          <h3 className="text-base font-semibold truncate overflow-hidden">
+            {chat.name || chat.id.split("@")[0]}
           </h3>
           <p
             className={`text-xs truncate ${

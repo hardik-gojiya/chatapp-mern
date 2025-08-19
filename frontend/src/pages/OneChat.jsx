@@ -38,6 +38,7 @@ function OneChat({ darkMode }) {
   const [replyfile, setReplyfile] = useState(null);
 
   const [isOpenTopMenu, setIOpenTopMenu] = useState(false);
+
   const handleClearChat = async () => {
     if (window.confirm("Are you sure you want to clear this chat?")) {
       alert("this feature is coming soon");
@@ -61,6 +62,7 @@ function OneChat({ darkMode }) {
     mobileno: 0,
     profilepic: "",
   });
+  // console.log(reciverDetails);
 
   const { id } = useParams();
 
@@ -75,6 +77,7 @@ function OneChat({ darkMode }) {
       setMessages(response.data);
       setReciverDetails({
         name: reciverres.data.name,
+        email: reciverres.data.email,
         mobileno: reciverres.data.mobileno,
         profilepic: reciverres.data.profilepic,
       });
@@ -217,6 +220,7 @@ function OneChat({ darkMode }) {
       document.removeEventListener("click", () => setIOpenTopMenu(false));
     };
   }, [isOpenTopMenu]);
+
   return (
     <div
       className={`w-full h-screen flex flex-col justify-between ${
@@ -246,7 +250,7 @@ function OneChat({ darkMode }) {
           onClick={() => setShowImage(reciverDetails.profilepic)}
         />
         <span className="text-lg font-semibold truncate max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
-          {reciverDetails.name || reciverDetails.email}
+          {reciverDetails.name || reciverDetails.email.split("@")[0]}
         </span>
         <div className="ml-auto relative">
           {/* <button
