@@ -30,10 +30,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log(`MongoDB Connected`))
-  .catch((err) => console.log(err));
+(async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB Connected");
+  } catch (err) {
+    console.error("MongoDB Connection Error:", err);
+    process.exit(1);
+  }
+})();
 
 import userroutes from "./routes/user.routes.js";
 import messageRoute from "./routes/message.routes.js";

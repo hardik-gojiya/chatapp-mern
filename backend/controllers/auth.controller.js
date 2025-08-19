@@ -13,6 +13,7 @@ dotenv.config();
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
+  service: "gmail",
   secure: false,
   auth: {
     user: process.env.EMAIL_USER,
@@ -21,7 +22,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const generateOtp = () => {
-  return Math.floor(10000 + Math.random() * 90000);
+  return Math.floor(10000 + Math.random() * 90000).toString();
 };
 
 const generateToken = (user) => {
@@ -35,19 +36,30 @@ const sendOtp = async (req, res) => {
     return res.status(400).json({ error: "Email is required" });
   }
   const newotp = generateOtp();
-  let user = await User.findOne({
-    email: String(email),
-  });
+
   try {
+    let user = await User.findOne({
+      email: String(email),
+    });
     if (user) {
-      user.otp = String(newotp);
+      user.otp = newotp;
       await user.save();
     } else {
-      user = new User({
-        email: String(email),
-        otp: String(newotp),
-      });
-      await user.save();
+      try {
+        user = new User({ email, otp: newotp });
+        await user.save();
+      } catch (err) {
+        if (err.code === 11000) {
+          // someone else inserted same email at same time → update instead
+          user = await User.findOneAndUpdate(
+            { email },
+            { otp: newotp },
+            { new: true }
+          );
+        } else {
+          throw err;
+        }
+      }
     }
 
     const mailOptions = {
