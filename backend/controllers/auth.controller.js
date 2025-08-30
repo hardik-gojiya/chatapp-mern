@@ -36,11 +36,10 @@ const sendOtp = async (req, res) => {
     return res.status(400).json({ error: "Email is required" });
   }
   const newotp = generateOtp();
-
+  let user = await User.findOne({
+    email: String(email),
+  });
   try {
-    let user = await User.findOne({
-      email: String(email),
-    });
     if (user) {
       user.otp = newotp;
       await user.save();
@@ -254,6 +253,7 @@ const checkAuth = async (req, res) => {
       isLoggedIn: true,
       userId: user._id,
       email: user.email,
+      bio: user.bio,
       mobileno: user.mobileno,
       name: user.name || "",
       profilepic: user.profilepic,
@@ -268,7 +268,7 @@ const checkAuth = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const { name, email, mobileno } = req.body;
+    const { name, email, mobileno, bio } = req.body;
     const profilepic = req.file?.path;
 
     const user = await User.findOne({ email: String(email) });
@@ -282,6 +282,9 @@ const updateUserProfile = async (req, res) => {
     }
     if (mobileno) {
       user.mobileno = mobileno;
+    }
+    if (bio) {
+      user.bio = bio;
     }
 
     if (profilepic) {
@@ -306,6 +309,7 @@ const updateUserProfile = async (req, res) => {
     return res.status(500).json({ message: "An error occurred" });
   }
 };
+
 const fetchUser = async (req, res) => {
   const { id } = req.params;
 

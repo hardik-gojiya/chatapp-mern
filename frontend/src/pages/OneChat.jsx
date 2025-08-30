@@ -9,7 +9,6 @@ import {
   faArrowLeft,
   faPaperPlane,
   faPaperclip,
-  faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
 import ScrollToBottom from "react-scroll-to-bottom";
 import { useLogin } from "../context/LoginContext";
@@ -39,23 +38,23 @@ function OneChat({ darkMode }) {
 
   const [isOpenTopMenu, setIOpenTopMenu] = useState(false);
 
-  const handleClearChat = async () => {
-    if (window.confirm("Are you sure you want to clear this chat?")) {
-      alert("this feature is coming soon");
-      try {
-        const response = await axios.delete(
-          `${import.meta.env.VITE_API_URL}/api/message/clear/${id}`
-        );
-        if (response.status === 200) {
-          setMessages([]);
-          showSuccess(response.data.message || "Chat cleared successfully.");
-        }
-        setIOpenTopMenu(false);
-      } catch (error) {
-        showError(error.responnse.data.error || "error while clearing chat");
-      }
-    }
-  };
+  // const handleClearChat = async () => {
+  //   if (window.confirm("Are you sure you want to clear this chat?")) {
+  //     alert("this feature is coming soon");
+  //     try {
+  //       const response = await axios.delete(
+  //         `${import.meta.env.VITE_API_URL}/api/message/clear/${id}`
+  //       );
+  //       if (response.status === 200) {
+  //         setMessages([]);
+  //         showSuccess(response.data.message || "Chat cleared successfully.");
+  //       }
+  //       setIOpenTopMenu(false);
+  //     } catch (error) {
+  //       showError(error.responnse.data.error || "error while clearing chat");
+  //     }
+  //   }
+  // };
 
   const [reciverDetails, setReciverDetails] = useState({
     name: "user",
@@ -79,7 +78,10 @@ function OneChat({ darkMode }) {
         name: reciverres.data.name,
         email: reciverres.data.email,
         mobileno: reciverres.data.mobileno,
-        profilepic: reciverres.data.profilepic,
+        profilepic:
+          reciverDetails.profilepic && reciverDetails.profilepic.trim() !== ""
+            ? reciverDetails.profilepic
+            : "/profile-backup.jpg",
       });
     } catch (error) {
       console.log("error while fetching your chat", error);
@@ -125,6 +127,8 @@ function OneChat({ darkMode }) {
         if (selectedFile) {
           formData.append("selectedFile", selectedFile);
         }
+        setSentMsg("");
+        setSelectedFile(null);
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/message/send/${id}`,
           formData,
@@ -244,7 +248,7 @@ function OneChat({ darkMode }) {
           <FontAwesomeIcon icon={faArrowLeft} />
         </Link>
         <img
-          src={reciverDetails.profilepic}
+          src={reciverDetails.profilepic || `/profile-backup.jpg`}
           alt="Contact DP"
           className="h-12 w-12 rounded-full object-cover cursor-pointer border-2 border-gray-400 hover:scale-110 transition duration-300"
           onClick={() => setShowImage(reciverDetails.profilepic)}

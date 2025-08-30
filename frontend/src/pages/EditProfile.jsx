@@ -20,7 +20,8 @@ function EditProfile({ darkMode }) {
   const [loading, setLoading] = useState(false);
   const { showSuccess, showError } = useToast();
   const [name, setName] = useState("");
-  const [profilePic, setProfilePic] = useState(null);
+  const [bio, setBio] = useState("");
+  const [profilePic, setProfilePic] = useState("");
   const [previewPic, setPreviewPic] = useState("");
   const fileInputRef = useRef(null);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
@@ -43,6 +44,7 @@ function EditProfile({ darkMode }) {
     e.preventDefault();
     const formData = new FormData();
     formData.append("name", name);
+    formData.append("bio", bio);
     formData.append("email", String(email));
     if (profilePic) {
       formData.append("profilepic", profilePic);
@@ -163,6 +165,19 @@ function EditProfile({ darkMode }) {
               }`}
               placeholder="Enter your name"
             />
+
+            <label className="text-lg font-semibold mb-1">bio</label>
+            <input
+              type="text"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              className={`w-full px-4 py-3 rounded-xl text-lg focus:outline-none focus:ring-2 ${
+                darkMode
+                  ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400"
+                  : "bg-gray-50 text-black border-gray-300 focus:ring-blue-500"
+              }`}
+              placeholder="Enter your bio"
+            />
           </div>
 
           <button
@@ -187,11 +202,11 @@ function EditProfile({ darkMode }) {
           </span>
         </p>
         <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 mt-2 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg w-full"
-              >
-                Logout
-              </button>
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-600 mt-2 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg w-full"
+        >
+          Logout
+        </button>
         <div className="mt-6">
           <button
             onClick={() => setShowDeleteMenu(!showDeleteMenu)}

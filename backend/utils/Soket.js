@@ -10,7 +10,7 @@ const io = new Server(server, {
     origin: ["http://localhost:5174", "https://chat-in-uanp.onrender.com"],
     credentials: true,
   },
-  transports: ["websocket", "polling"],
+  transports: ["websocket"],
 });
 
 const userSocketMap = {};

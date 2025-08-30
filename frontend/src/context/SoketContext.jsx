@@ -18,7 +18,7 @@ export const SocketProvider = ({ children }) => {
       ["https://chat-in-uanp.onrender.com", "http://localhost:5000"],
       {
         withCredentials: true,
-        transports: ["websocket", "polling"],
+        transports: ["websocket"],
         query: { userId: userId },
       }
     );
@@ -33,7 +33,7 @@ export const SocketProvider = ({ children }) => {
     });
 
     return () => newSocket.disconnect();
-  }, [userId, onlineUsers, window.location.reload]);
+  }, [userId]);
 
   return (
     <socketContext.Provider value={{ socket, onlineUsers }}>

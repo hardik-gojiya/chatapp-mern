@@ -14,7 +14,7 @@ import OneChat from "./pages/OneChat";
 import EditProfile from "./pages/EditProfile";
 
 function App() {
-  const { islogedin, mobileno, handleLogout } = useLogin();
+  const { islogedin, handleLogout } = useLogin();
   const [darkMode, setDarkMode] = useState(true);
   const [isOpenAllChat, setIsOpenAllChat] = useState(window.innerWidth >= 800);
 
@@ -26,7 +26,7 @@ function App() {
     }
 
     const handleWindResize = () => {
-      if (window.innerWidth < 1000) {
+      if (window.innerWidth < 800) {
         setIsOpenAllChat(false);
       } else {
         setIsOpenAllChat(true);
