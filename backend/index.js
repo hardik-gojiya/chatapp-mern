@@ -21,6 +21,7 @@ const corsOptions = {
     "http://localhost:5175",
     "http://localhost:5000",
     "https://chat-in-uanp.onrender.com",
+    "https://chatapp-mern-ck4w.onrender.com/",
   ],
   credentials: true,
 };
