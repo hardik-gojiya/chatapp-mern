@@ -4,6 +4,7 @@ axios.defaults.withCredentials = true;
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../context/LoginContext";
 import { useToast } from "../context/ToastContext";
+import emailjs from "emailjs-com";
 
 function LoginOrSignup({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();
@@ -51,22 +52,50 @@ function LoginOrSignup({ darkMode, toggleDarkMode }) {
       alert("Enter a valid Email");
       return;
     }
+
     try {
       setLoading(true);
-      var response = await axios.post(
+
+      // 1️⃣ Get OTP from backend
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/users/sendotp`,
-        {
-          email,
-        }
+        { email }
       );
+
+      const { otp } = response.data; // assuming backend returns { otp, message }
+
+      // 2️⃣ Send OTP via EmailJS
+      const serviceID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+      console.log("Sending OTP via EmailJS:", {
+        serviceID,
+        templateID,
+        publicKey,
+        email,
+        otp,
+      });
+
+      await emailjs.send(
+        serviceID,
+        templateID,
+        {
+          to_email: email,
+          otp,
+          app_name: "Chat-In",
+        },
+        publicKey
+      );
+
       setIsOtpSent(true);
-      alert(response.data.message);
+      showSuccess("OTP sent to your email successfully!");
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      setIsOtpSent(false);
       console.log("Error while sending OTP", error);
       showError(
-        error.response.data.error ||
+        error.response?.data?.error ||
           "Error while sending OTP. Please check if the email is valid."
       );
     }

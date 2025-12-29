@@ -22,6 +22,7 @@ function OneChat({ darkMode }) {
   const { socket } = useSocket();
   const { name: loginusername } = useLogin();
   const chatinputref = useRef(null);
+  const messagesEndRef = useRef(null);
 
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);

@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 import { deleteFromCloudinary, uploadOnClodinary } from "../utils/Cloudnary.js";
 import { PinChat } from "../models/PinChat.model.js";
 import mongoose from "mongoose";
+import emailjs from "@emailjs/nodejs";
+import axios from "axios";
 
 dotenv.config();
 
@@ -35,10 +37,10 @@ const sendOtp = async (req, res) => {
   if (!email) {
     return res.status(400).json({ error: "Email is required" });
   }
+
   const newotp = generateOtp();
-  let user = await User.findOne({
-    email: String(email),
-  });
+
+  let user = await User.findOne({ email: String(email) });
   try {
     if (user) {
       user.otp = newotp;
@@ -49,7 +51,6 @@ const sendOtp = async (req, res) => {
         await user.save();
       } catch (err) {
         if (err.code === 11000) {
-          // someone else inserted same email at same time → update instead
           user = await User.findOneAndUpdate(
             { email },
             { otp: newotp },
@@ -61,21 +62,35 @@ const sendOtp = async (req, res) => {
       }
     }
 
-    const mailOptions = {
-      from: `Chat-In <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Your OTP for Verification for Chat-In",
-      text: `Your OTP for Chat-In application is: ${newotp}`,
-      html: `<h2>Your OTP for Chat-In application is: <b>${newotp}</b></h2>`,
-    };
+    // Send email using EmailJS Node SDK
+    // const serviceID = process.env.EMAILJS_SERVICE_ID;
+    // const templateID = process.env.EMAILJS_TEMPLATE_ID;
+    // const publicKey = process.env.EMAILJS_PUBLIC_KEY;
+    // const privateKey = process.env.EMAILJS_PRIVATE_KEY; // highly recommended
 
-    const info = await transporter.sendMail(mailOptions);
-    if (!info || !info.accepted || info.accepted.length === 0) {
-      return res.status(500).json({ error: "Failed to send OTP" });
-    }
-    return res.status(200).json({ message: "OTP sent successfully" });
+    // const templateParams = {
+    //   to_email: email,
+    //   otp: newotp,
+    //   app_name: "Chat-In",
+    // };
+
+    // const response = await emailjs.send(
+    //   serviceID,
+    //   templateID,
+    //   templateParams,
+    //   {
+    //     privateKey,
+    //   }
+    // );
+
+    // console.log("EmailJS Response:", response);
+
+    return res
+      .status(200)
+      .json({ otp: newotp, message: "OTP sent successfully" });
   } catch (error) {
-    console.log("Error sending OTP: ", error);
+    console.log("Error sending OTP:", error);
+
     if (user) {
       user.otp = undefined;
       await user.save();
